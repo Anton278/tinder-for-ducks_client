@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
 export const Container = styled.div`
+  height: calc(100vh - 56px);
   margin: 0 auto;
   max-width: ${({ theme }) => theme.breakpoints.xl};
   padding: 0 20px;

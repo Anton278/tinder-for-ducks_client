@@ -1,12 +1,12 @@
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
+import { useEffect } from "react";
 
-import Container from "../../components/Container";
+import { passwordRegex } from "../../const";
+import Layout from "../../components/Layout";
 
 import * as Styled from "./Register.styled";
-import { passwordRegex } from "../../const";
-import { useEffect } from "react";
 
 type Inputs = {
   username: string;
@@ -38,7 +38,7 @@ function RegisterPage() {
   console.log("errors ", errors);
 
   return (
-    <Container>
+    <Layout>
       <Styled.Wrapper>
         <div style={{ maxWidth: 370, width: "100%" }}>
           <Styled.Title>Registration</Styled.Title>
@@ -148,7 +148,7 @@ function RegisterPage() {
           </Form>
         </div>
       </Styled.Wrapper>
-    </Container>
+    </Layout>
   );
 }
 

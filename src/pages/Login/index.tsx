@@ -3,7 +3,7 @@ import Stack from "react-bootstrap/Stack";
 import Button from "react-bootstrap/Button";
 import { SubmitHandler, useForm } from "react-hook-form";
 
-import Container from "../../components/Container";
+import Layout from "../../components/Layout";
 
 import * as Styled from "./Login.styled";
 
@@ -22,7 +22,7 @@ function LoginPage() {
   const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
 
   return (
-    <Container>
+    <Layout>
       <Styled.Wrapper>
         <div>
           <h2>Login</h2>
@@ -65,7 +65,7 @@ function LoginPage() {
           </Form>
         </div>
       </Styled.Wrapper>
-    </Container>
+    </Layout>
   );
 }
 
