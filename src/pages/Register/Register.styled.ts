@@ -12,7 +12,11 @@ export const Title = styled.h2`
 `;
 
 export const ImagesList = styled.ol``;
-export const ImagesListItem = styled.li``;
+export const ImagesListItem = styled.li`
+  &:not(:last-of-type) {
+    margin-bottom: 10px;
+  }
+`;
 
 export const AddButtonWrapper = styled.p`
   display: flex;
