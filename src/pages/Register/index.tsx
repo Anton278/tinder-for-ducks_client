@@ -1,12 +1,13 @@
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { passwordRegex } from "../../const";
 import Layout from "../../components/Layout";
 
 import * as Styled from "./Register.styled";
+import axios from "axios";
 
 type Inputs = {
   username: string;
@@ -28,14 +29,44 @@ function RegisterPage() {
       name: "images",
     }
   );
+  const [isSending, setIsSending] = useState(false);
+  const [error, setError] = useState("");
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    console.log(data);
+    const images = data.images.reduce((acc, image, index) => {
+      if (image.value[0]) {
+        const key = `image${index + 1}`;
+        return { ...acc, [key]: image.value[0] };
+      }
+      return acc;
+    }, {});
+    // @ts-ignore
+    delete data.images;
+    console.log({ ...data, ...images });
+
+    try {
+      setError("");
+      setIsSending(true);
+      await axios.post(
+        "http://localhost:5000/auth/register",
+        { ...data, ...images },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsSending(false);
+    }
+  };
 
   useEffect(() => {
     append("");
   }, []);
-
-  console.log("errors ", errors);
 
   return (
     <Layout>
@@ -110,6 +141,7 @@ function RegisterPage() {
                 <Button
                   variant="primary"
                   type="button"
+                  // @ts-ignore
                   onClick={() => append({})}
                 >
                   +
@@ -141,7 +173,7 @@ function RegisterPage() {
               <Button type="reset" variant="secondary">
                 Reset
               </Button>
-              <Button variant="primary" type="submit">
+              <Button variant="primary" type="submit" disabled={isSending}>
                 Submit
               </Button>
             </Styled.BottomButtons>
