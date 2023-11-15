@@ -1,17 +1,21 @@
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import InputGroup from "react-bootstrap/InputGroup";
 import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 import { passwordRegex } from "../../const";
 import Layout from "../../components/Layout";
+import Eye from "../../components/Icons/Eye";
+import EyeSlash from "../../components/Icons/EyeSlash";
 
 import * as Styled from "./Register.styled";
-import axios from "axios";
 
 type Inputs = {
   username: string;
   password: string;
+  repeatPassword: string;
   images: any[];
   description: string;
 };
@@ -22,15 +26,15 @@ function RegisterPage() {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<Inputs>();
-  const { fields, append, prepend, remove, swap, move, insert } = useFieldArray(
-    {
-      control,
-      name: "images",
-    }
-  );
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "images",
+  });
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     console.log(data);
@@ -96,16 +100,24 @@ function RegisterPage() {
                 </Form.Control.Feedback>
               )}
             </Form.Group>
-            <Form.Group className="mb-3" controlId="password">
-              <Form.Label>Password</Form.Label>
+
+            <Form.Label htmlFor="password">Password</Form.Label>
+            <InputGroup className="mb-3">
               <Form.Control
-                type="password"
+                type={showPassword ? "text" : "password"}
                 {...register("password", {
                   required: true,
                   pattern: passwordRegex,
                 })}
                 isInvalid={!!errors.password}
+                id="password"
               />
+              <Button
+                variant="outline-secondary"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeSlash /> : <Eye />}
+              </Button>
               {errors.password && (
                 <Form.Control.Feedback type="invalid">
                   {errors.password.type === "required"
@@ -113,8 +125,30 @@ function RegisterPage() {
                     : "8 characters, 1 uppercase letter, 1 lowercase letter and 1 number"}
                 </Form.Control.Feedback>
               )}
+            </InputGroup>
+
+            <Form.Group className="mb-3" controlId="repeat-password">
+              <Form.Label>Repeat password</Form.Label>
+              <Form.Control
+                type="password"
+                {...register("repeatPassword", {
+                  required: true,
+                  validate: {
+                    match: (v) => v === watch("password"),
+                  },
+                })}
+                isInvalid={!!errors.repeatPassword}
+              />
+              {errors.repeatPassword && (
+                <Form.Control.Feedback type="invalid">
+                  {errors.repeatPassword.type === "required"
+                    ? "Required"
+                    : "Password doesn't match"}
+                </Form.Control.Feedback>
+              )}
             </Form.Group>
 
+            <p>Duck images</p>
             <Styled.ImagesList>
               {fields.map((field, index) => (
                 <Styled.ImagesListItem key={field.id}>
@@ -153,7 +187,7 @@ function RegisterPage() {
               className="mb-3"
               controlId="exampleForm.ControlTextarea1"
             >
-              <Form.Label>Description</Form.Label>
+              <Form.Label>Duck Description</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
