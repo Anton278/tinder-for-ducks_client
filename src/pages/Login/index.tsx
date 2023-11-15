@@ -2,8 +2,12 @@ import Form from "react-bootstrap/Form";
 import Stack from "react-bootstrap/Stack";
 import Button from "react-bootstrap/Button";
 import { SubmitHandler, useForm } from "react-hook-form";
+import InputGroup from "react-bootstrap/InputGroup";
+import { useState } from "react";
 
 import Layout from "../../components/Layout";
+import Eye from "../../components/Icons/Eye";
+import EyeSlash from "../../components/Icons/EyeSlash";
 
 import * as Styled from "./Login.styled";
 
@@ -18,6 +22,8 @@ function LoginPage() {
     handleSubmit,
     formState: { errors },
   } = useForm<Inputs>();
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
 
@@ -41,19 +47,27 @@ function LoginPage() {
                 </Form.Control.Feedback>
               )}
             </Form.Group>
-            <Form.Group className="mb-3" controlId="password">
-              <Form.Label>Password</Form.Label>
+
+            <Form.Label htmlFor="password">Password</Form.Label>
+            <InputGroup className="mb-3">
               <Form.Control
-                type="password"
+                type={showPassword ? "text" : "password"}
                 {...register("password", { required: true })}
                 isInvalid={!!errors.password}
+                id="password"
               />
+              <Button
+                variant="outline-secondary"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeSlash /> : <Eye />}
+              </Button>
               {errors.password && (
                 <Form.Control.Feedback type="invalid">
                   Required
                 </Form.Control.Feedback>
               )}
-            </Form.Group>
+            </InputGroup>
             <Stack direction="horizontal" gap={3}>
               <Button variant="secondary" type="reset" className="ms-auto">
                 Reset
