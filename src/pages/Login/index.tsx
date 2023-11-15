@@ -30,7 +30,7 @@ function LoginPage() {
   return (
     <Layout>
       <Styled.Wrapper>
-        <div>
+        <div style={{ maxWidth: 370, width: "100%" }}>
           <h2>Login</h2>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <Form.Group className="mb-3" controlId="username">
