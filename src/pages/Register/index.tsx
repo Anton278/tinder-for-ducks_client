@@ -10,6 +10,7 @@ import Layout from "../../components/Layout";
 import Eye from "../../components/Icons/Eye";
 import EyeSlash from "../../components/Icons/EyeSlash";
 import { getFromSS } from "../../utils/getFromSS";
+import { useDebounce } from "../../hooks/useDebounce";
 
 import * as Styled from "./Register.styled";
 
@@ -38,8 +39,8 @@ function RegisterPage() {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const username = watch("username");
-  const duckDescription = watch("description");
+  const username = useDebounce(watch("username"));
+  const duckDescription = useDebounce(watch("description"));
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     console.log(data);
@@ -95,8 +96,6 @@ function RegisterPage() {
   }, []);
 
   useEffect(() => {
-    console.log("username ", username);
-    console.log("duckDescription ", duckDescription);
     if (
       typeof username === "undefined" ||
       typeof duckDescription === "undefined"
