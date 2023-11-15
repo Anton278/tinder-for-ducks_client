@@ -9,6 +9,7 @@ import { passwordRegex } from "../../const";
 import Layout from "../../components/Layout";
 import Eye from "../../components/Icons/Eye";
 import EyeSlash from "../../components/Icons/EyeSlash";
+import { getFromSS } from "../../utils/getFromSS";
 
 import * as Styled from "./Register.styled";
 
@@ -27,6 +28,7 @@ function RegisterPage() {
     handleSubmit,
     formState: { errors },
     watch,
+    setValue,
   } = useForm<Inputs>();
   const { fields, append, remove } = useFieldArray({
     control,
@@ -35,6 +37,9 @@ function RegisterPage() {
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const username = watch("username");
+  const duckDescription = watch("description");
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     console.log(data);
@@ -69,8 +74,56 @@ function RegisterPage() {
   };
 
   useEffect(() => {
+    const registerFormData = getFromSS<{
+      username: string;
+      duckDescription: string;
+    }>("registerFormData");
+    if (registerFormData !== null) {
+      setValue("username", registerFormData.username);
+      setValue("description", registerFormData.duckDescription);
+    } else {
+      sessionStorage.setItem(
+        "registerFormData",
+        JSON.stringify({
+          username: "",
+          duckDescription: "",
+        })
+      );
+    }
+
     append("");
   }, []);
+
+  useEffect(() => {
+    console.log("username ", username);
+    console.log("duckDescription ", duckDescription);
+    if (
+      typeof username === "undefined" ||
+      typeof duckDescription === "undefined"
+    ) {
+      return;
+    }
+    const registerFormData = getFromSS<{
+      username: string;
+      duckDescription: string;
+    }>("registerFormData");
+    if (registerFormData === null) {
+      return;
+    }
+    if (
+      registerFormData.username === username &&
+      registerFormData.duckDescription === duckDescription
+    ) {
+      return;
+    }
+    sessionStorage.setItem(
+      "registerFormData",
+      JSON.stringify({
+        username,
+        duckDescription,
+      })
+    );
+  }, [username, duckDescription]);
 
   return (
     <Layout>
