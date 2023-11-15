@@ -30,6 +30,7 @@ function RegisterPage() {
     formState: { errors },
     watch,
     setValue,
+    reset,
   } = useForm<Inputs>();
   const { fields, append, remove } = useFieldArray({
     control,
@@ -41,6 +42,16 @@ function RegisterPage() {
 
   const username = useDebounce(watch("username"));
   const duckDescription = useDebounce(watch("description"));
+
+  const initStorage = () => {
+    sessionStorage.setItem(
+      "registerFormData",
+      JSON.stringify({
+        username: "",
+        duckDescription: "",
+      })
+    );
+  };
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     console.log(data);
@@ -67,21 +78,13 @@ function RegisterPage() {
           },
         }
       );
+      reset();
+      initStorage();
     } catch (err: any) {
       setError(err.message);
     } finally {
       setIsSending(false);
     }
-  };
-
-  const initStorage = () => {
-    sessionStorage.setItem(
-      "registerFormData",
-      JSON.stringify({
-        username: "",
-        duckDescription: "",
-      })
-    );
   };
 
   useEffect(() => {
