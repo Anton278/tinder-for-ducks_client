@@ -10,7 +10,9 @@ function Layout({ children }: LayoutProps) {
   return (
     <>
       <Header />
-      <Styled.Container as="main">{children}</Styled.Container>
+      <Styled.Container as="main" className="container">
+        {children}
+      </Styled.Container>
     </>
   );
 }
