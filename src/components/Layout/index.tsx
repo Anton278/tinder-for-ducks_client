@@ -1,5 +1,6 @@
-import Container from "../Container";
 import Header from "../Header";
+
+import * as Styled from "./Layout.styled";
 
 type LayoutProps = {
   children?: React.ReactNode;
@@ -9,7 +10,7 @@ function Layout({ children }: LayoutProps) {
   return (
     <>
       <Header />
-      <Container>{children}</Container>
+      <Styled.Container as="main">{children}</Styled.Container>
     </>
   );
 }

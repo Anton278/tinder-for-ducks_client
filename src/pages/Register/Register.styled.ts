@@ -1,10 +1,11 @@
 import styled from "styled-components";
 
+// min-height = header + container margin
 export const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  min-height: calc(100vh - 96px);
 `;
 
 export const Title = styled.h2`
