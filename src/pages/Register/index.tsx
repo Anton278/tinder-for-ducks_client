@@ -74,6 +74,16 @@ function RegisterPage() {
     }
   };
 
+  const initStorage = () => {
+    sessionStorage.setItem(
+      "registerFormData",
+      JSON.stringify({
+        username: "",
+        duckDescription: "",
+      })
+    );
+  };
+
   useEffect(() => {
     const registerFormData = getFromSS<{
       username: string;
@@ -83,13 +93,7 @@ function RegisterPage() {
       setValue("username", registerFormData.username);
       setValue("description", registerFormData.duckDescription);
     } else {
-      sessionStorage.setItem(
-        "registerFormData",
-        JSON.stringify({
-          username: "",
-          duckDescription: "",
-        })
-      );
+      initStorage();
     }
 
     append("");
@@ -256,7 +260,7 @@ function RegisterPage() {
             </Form.Group>
 
             <Styled.BottomButtons>
-              <Button type="reset" variant="secondary">
+              <Button type="reset" variant="secondary" onClick={initStorage}>
                 Reset
               </Button>
               <Button variant="primary" type="submit" disabled={isSending}>
