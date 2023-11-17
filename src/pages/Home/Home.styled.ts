@@ -1,9 +1,7 @@
 import styled from "styled-components";
 
 export const Inner = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: relative;
   min-height: calc(100vh - 96px);
 `;
 

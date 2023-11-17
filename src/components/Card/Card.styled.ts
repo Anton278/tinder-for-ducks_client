@@ -31,9 +31,9 @@ export const Card = styled(BootstrapCard)<{
   width: 320px;
   overflow: hidden;
   position: absolute;
-  transform: translate(-50%, -50%);
   animation-name: ${({ $animName }) =>
     $animName === "like" ? like : $animName === "dislike" ? dislike : ""};
   animation-duration: 1s;
   animation-fill-mode: forwards;
+  transition: transform 0.15s ease-out;
 `;
