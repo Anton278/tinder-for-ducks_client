@@ -8,6 +8,9 @@ import { useState } from "react";
 import Layout from "../../components/Layout";
 import Eye from "../../components/Icons/Eye";
 import EyeSlash from "../../components/Icons/EyeSlash";
+import authService from "../../services/auth";
+import { api } from "../../http/api";
+import { useAuth } from "../../stores/auth";
 
 import * as Styled from "./Login.styled";
 
@@ -23,9 +26,23 @@ function LoginPage() {
     formState: { errors },
   } = useForm<Inputs>();
 
+  const setIsAuthed = useAuth((state) => state.setIsAuthed);
+
+  const [isSending, setIsSending] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    try {
+      setIsSending(true);
+      const res = await authService.login(data);
+      localStorage.setItem("accessToken", res.accessToken);
+      api.defaults.headers["Access-Token"] = `Bearer ${res.accessToken}`;
+      setIsAuthed(true);
+    } catch (err) {
+    } finally {
+      setIsSending(false);
+    }
+  };
 
   return (
     <Layout>
@@ -72,7 +89,7 @@ function LoginPage() {
               <Button variant="secondary" type="reset" className="ms-auto">
                 Reset
               </Button>
-              <Button variant="primary" type="submit">
+              <Button variant="primary" type="submit" disabled={isSending}>
                 Submit
               </Button>
             </Stack>

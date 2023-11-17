@@ -11,6 +11,9 @@ import Eye from "../../components/Icons/Eye";
 import EyeSlash from "../../components/Icons/EyeSlash";
 import { getFromSS } from "../../utils/getFromSS";
 import { useDebounce } from "../../hooks/useDebounce";
+import authService from "../../services/auth";
+import { useAuth } from "../../stores/auth";
+import { api } from "../../http/api";
 
 import * as Styled from "./Register.styled";
 
@@ -39,6 +42,7 @@ function RegisterPage() {
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const setIsAuthed = useAuth((state) => state.setIsAuthed);
 
   const username = useDebounce(watch("username"));
   const duckDescription = useDebounce(watch("description"));
@@ -54,7 +58,6 @@ function RegisterPage() {
   };
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    console.log(data);
     const images = data.images.reduce((acc, image, index) => {
       if (image.value[0]) {
         const key = `image${index + 1}`;
@@ -64,20 +67,14 @@ function RegisterPage() {
     }, {});
     // @ts-ignore
     delete data.images;
-    console.log({ ...data, ...images });
 
     try {
       setError("");
       setIsSending(true);
-      await axios.post(
-        "http://localhost:5000/auth/register",
-        { ...data, ...images },
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const res = await authService.register({ ...data, ...images });
+      localStorage.setItem("accessToken", res.accessToken);
+      api.defaults.headers["Access-Token"] = `Bearer ${res.accessToken}`;
+      setIsAuthed(true);
       reset();
       initStorage();
     } catch (err: any) {
