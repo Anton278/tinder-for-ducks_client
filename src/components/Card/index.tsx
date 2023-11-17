@@ -15,9 +15,24 @@ type CardProps = {
 };
 
 function Card({ images, index }: CardProps) {
-  const [animName, setAnimName] = useState<"" | "like" | "dislike">("");
   const [styles, setStyles] = useState<CSSProperties>({});
   const cardRef = useRef<HTMLDivElement>();
+
+  const dislike = () => {
+    setStyles({
+      transform: "rotate(-30deg)",
+      left: -90 - 320 + "px",
+      transition: "transform 0.15s ease-out, left 0.3s ease-out",
+    });
+  };
+
+  const like = () => {
+    setStyles({
+      transform: "rotate(30deg)",
+      left: "calc(100vw + 90px)",
+      transition: "transform 0.15s ease-out, left 0.3s ease-out",
+    });
+  };
 
   useLayoutEffect(() => {
     function moveToCenter() {
@@ -123,7 +138,6 @@ function Card({ images, index }: CardProps) {
         zIndex: 9999 - index,
         ...styles,
       }}
-      $animName={animName}
       ref={cardRef}
     >
       <Carousel>
@@ -149,10 +163,10 @@ function Card({ images, index }: CardProps) {
           gap={3}
           style={{ justifyContent: "center" }}
         >
-          <Button variant="danger" onClick={() => setAnimName("dislike")}>
+          <Button variant="danger" onClick={dislike}>
             <Cancel />
           </Button>
-          <Button variant="success" onClick={() => setAnimName("like")}>
+          <Button variant="success" onClick={like}>
             <Heart />
           </Button>
         </Stack>
