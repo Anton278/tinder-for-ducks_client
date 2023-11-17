@@ -46,14 +46,11 @@ function Card({ images, index }: CardProps) {
         return;
       }
       const rect = card.getBoundingClientRect();
-      console.log(rect);
-
       const shiftX = e.clientX - rect.left;
 
       function onMouseMove(e: MouseEvent) {
         const left = e.pageX - shiftX;
         const distance = rect.left - left;
-        console.log(distance);
 
         if (distance >= 20) {
           setStyles((oldStyles) => ({
@@ -85,8 +82,6 @@ function Card({ images, index }: CardProps) {
         (e) => {
           const left = e.pageX - shiftX;
           const distance = rect.left - left;
-          const maxDistance = rect.width * 1.5;
-          const minLeft = rect.left - maxDistance;
 
           if (distance >= 20) {
             setStyles((oldStyles) => ({
