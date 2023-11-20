@@ -151,17 +151,26 @@ function Card({ images, index, description }: CardProps) {
       }}
       ref={cardRef}
     >
-      <Carousel>
-        {images.map((image, index) => (
-          <Carousel.Item key={index}>
-            <img
-              src={image}
-              alt="Duck"
-              style={{ width: "100%", height: "200px", objectFit: "cover" }}
-            />
-          </Carousel.Item>
-        ))}
-      </Carousel>
+      {images.length === 1 ? (
+        <Styled.Card.Img
+          variant="top"
+          src={images[0]}
+          alt="Duck"
+          style={{ width: "100%", height: "200px", objectFit: "cover" }}
+        />
+      ) : (
+        <Carousel>
+          {images.map((image, index) => (
+            <Carousel.Item key={index}>
+              <img
+                src={image}
+                alt="Duck"
+                style={{ width: "100%", height: "200px", objectFit: "cover" }}
+              />
+            </Carousel.Item>
+          ))}
+        </Carousel>
+      )}
       <Styled.Card.Body>
         <Styled.Card.Text>{description}</Styled.Card.Text>
         <Stack
