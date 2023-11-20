@@ -24,7 +24,12 @@ function HomePage() {
         <p>loading...</p>
       ) : (
         users.map((user, i) => (
-          <Card images={user.duck.images} index={i} key={user.id} />
+          <Card
+            key={user.id}
+            images={user.duck.images}
+            description={user.duck.description}
+            index={i}
+          />
         ))
       )}
     </Layout>

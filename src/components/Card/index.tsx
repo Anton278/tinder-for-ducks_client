@@ -12,9 +12,10 @@ import * as Styled from "./Card.styled";
 type CardProps = {
   images: string[];
   index: number;
+  description: string;
 };
 
-function Card({ images, index }: CardProps) {
+function Card({ images, index, description }: CardProps) {
   const [styles, setStyles] = useState<CSSProperties>({});
   const cardRef = useRef<HTMLDivElement>();
 
@@ -145,19 +146,14 @@ function Card({ images, index }: CardProps) {
           <Carousel.Item key={index}>
             <img
               src={image}
-              alt=""
+              alt="Duck"
               style={{ width: "100%", height: "200px", objectFit: "cover" }}
             />
           </Carousel.Item>
         ))}
       </Carousel>
       <Styled.Card.Body>
-        <Styled.Card.Text>
-          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quae,
-          deleniti necessitatibus est, quidem beatae pariatur fugiat quaerat
-          tenetur repellat consequatur similique adipisci molestias quisquam id?
-          Molestiae fuga nemo velit explicabo?
-        </Styled.Card.Text>
+        <Styled.Card.Text>{description}</Styled.Card.Text>
         <Stack
           direction="horizontal"
           gap={3}
