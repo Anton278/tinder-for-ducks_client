@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import InputGroup from "react-bootstrap/InputGroup";
 import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import Spinner from "react-bootstrap/Spinner";
 
 import { passwordRegex } from "../../const";
 import Layout from "../../components/Layout";
@@ -16,6 +16,7 @@ import { useAuth } from "../../stores/auth";
 import { api } from "../../http/api";
 
 import * as Styled from "./Register.styled";
+import usersService from "../../services/users";
 
 type Inputs = {
   username: string;
@@ -34,18 +35,23 @@ function RegisterPage() {
     watch,
     setValue,
     reset,
+    setError,
+    clearErrors,
   } = useForm<Inputs>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "images",
   });
+  const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
-  const [error, setError] = useState("");
+  // const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const setIsAuthed = useAuth((state) => state.setIsAuthed);
 
   const username = useDebounce(watch("username"));
   const duckDescription = useDebounce(watch("description"));
+
+  console.log(errors);
 
   const initStorage = () => {
     sessionStorage.setItem(
@@ -69,7 +75,7 @@ function RegisterPage() {
     delete data.images;
 
     try {
-      setError("");
+      // setError("");
       setIsSending(true);
       const res = await authService.register({ ...data, ...images });
       localStorage.setItem("accessToken", res.accessToken);
@@ -78,7 +84,7 @@ function RegisterPage() {
       reset();
       initStorage();
     } catch (err: any) {
-      setError(err.message);
+      // setError(err.message);
     } finally {
       setIsSending(false);
     }
@@ -128,6 +134,34 @@ function RegisterPage() {
     );
   }, [username, duckDescription]);
 
+  console.log(username);
+
+  useEffect(() => {
+    if (typeof username === "undefined") {
+      return;
+    }
+    async function someFn() {
+      try {
+        setIsLoading(true);
+        const users = await usersService.getAll();
+        const user = users.find((user) => user.username === username);
+        if (user) {
+          setError("username", {
+            type: "custom",
+            message: `Username ${user.username} is already taken`,
+          });
+        } else {
+          clearErrors("username");
+        }
+      } catch (err) {
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    someFn();
+  }, [username]);
+
   return (
     <Layout>
       <Styled.Wrapper>
@@ -136,22 +170,38 @@ function RegisterPage() {
           <Form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
             <Form.Group className="mb-3" controlId="username">
               <Form.Label>Username</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="john001"
-                {...register("username", {
-                  required: true,
-                  validate: {
-                    inLowerCase: (v) => v.toLowerCase() === v,
-                    withoutWhitespaces: (v) => !v.trim().includes(" "),
-                  },
-                })}
-                isInvalid={!!errors.username}
-              />
+              <div style={{ position: "relative" }}>
+                <Form.Control
+                  type="text"
+                  placeholder="john001"
+                  {...register("username", {
+                    required: true,
+                    validate: {
+                      inLowerCase: (v) => v.toLowerCase() === v,
+                      withoutWhitespaces: (v) => !v.trim().includes(" "),
+                    },
+                  })}
+                  // isInvalid={!!errors.username}
+                  // isInvalid={true}
+                  style={{ paddingRight: "calc(1.5em + 0.75rem)" }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "50%",
+                    right: 10,
+                    transform: "translateY(-50%)",
+                  }}
+                >
+                  <Spinner animation="border" size="sm" variant="secondary" />
+                </div>
+              </div>
               {errors.username && (
                 <Form.Control.Feedback type="invalid">
                   {errors.username.type === "required"
                     ? "Required"
+                    : errors.username.type === "custom"
+                    ? errors.username.message
                     : "Username must be in lowercase, without whitespaces"}
                 </Form.Control.Feedback>
               )}
@@ -263,7 +313,11 @@ function RegisterPage() {
               <Button type="reset" variant="secondary" onClick={initStorage}>
                 Reset
               </Button>
-              <Button variant="primary" type="submit" disabled={isSending}>
+              <Button
+                variant="primary"
+                type="submit"
+                disabled={isSending || isLoading}
+              >
                 Submit
               </Button>
             </Styled.BottomButtons>
