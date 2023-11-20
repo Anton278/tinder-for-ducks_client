@@ -10,4 +10,7 @@ export const Container = styled(BootstrapContainer)`
 
 export const ContentWrapper = styled.div`
   flex-grow: 1;
+  position: relative;
+  overflow-x: hidden;
+  min-height: calc(100vh - 96px);
 `;

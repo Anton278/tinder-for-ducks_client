@@ -41,9 +41,13 @@ function Card({ images, index, description }: CardProps) {
         return console.error("card ref is absent");
       }
       const card = cardRef.current;
+      const parentEl = cardRef.current.parentElement;
+      if (!parentEl) {
+        return console.error("no parent element for card");
+      }
       setStyles({
-        left: window.innerWidth / 2 - card.offsetWidth / 2 + "px",
-        top: window.innerHeight / 2 - card.offsetHeight / 2 + "px",
+        left: parentEl.offsetWidth / 2 - card.offsetWidth / 2 + "px",
+        top: 0,
       });
     }
 
@@ -61,12 +65,18 @@ function Card({ images, index, description }: CardProps) {
       if (!card) {
         return;
       }
+      const parentEl = card.parentElement;
+      if (!parentEl) {
+        return console.error("card parent element is null");
+      }
+      const parentRect = parentEl.getBoundingClientRect();
       const rect = card.getBoundingClientRect();
+      const initX = rect.left - parentRect.left;
       const shiftX = e.clientX - rect.left;
 
       function onMouseMove(e: MouseEvent) {
-        const left = e.pageX - shiftX;
-        const distance = rect.left - left;
+        const left = e.pageX - shiftX - parentRect.left;
+        const distance = initX - left;
 
         if (distance >= 20) {
           setStyles((oldStyles) => ({
@@ -96,8 +106,8 @@ function Card({ images, index, description }: CardProps) {
       card.addEventListener(
         "mouseup",
         (e) => {
-          const left = e.pageX - shiftX;
-          const distance = rect.left - left;
+          const left = e.pageX - shiftX - parentRect.left;
+          const distance = initX - left;
 
           if (distance >= 20) {
             setStyles((oldStyles) => ({
@@ -110,7 +120,7 @@ function Card({ images, index, description }: CardProps) {
             setStyles((oldStyles) => ({
               ...oldStyles,
               transform: "",
-              left: rect.left + "px",
+              left: initX + "px",
             }));
           }
           if (distance <= -20) {

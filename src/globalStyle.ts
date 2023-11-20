@@ -8,9 +8,7 @@ export const GlobalStyle = createGlobalStyle(({ theme }) => ({
     margin: 0,
     fontSize: 16,
   },
-  body: {
-    overflowX: "hidden",
-  },
+  body: {},
   "*": {
     boxSizing: "border-box",
   },
