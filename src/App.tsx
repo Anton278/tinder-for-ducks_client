@@ -3,6 +3,7 @@ import {
   createBrowserRouter,
   Navigate,
 } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 import RegisterPage from "./pages/Register";
 import LoginPage from "./pages/Login";
@@ -10,16 +11,23 @@ import HomePage from "./pages/Home";
 import { useAuth } from "./stores/auth";
 import { useEffect } from "react";
 import authService from "./services/auth";
+import { useUsers } from "./stores/users";
+import { User } from "./models/User";
 
 function App() {
   const isAuthed = useAuth((state) => state.isAuthed);
   const setIsAuthed = useAuth((state) => state.setIsAuthed);
+  const setUser = useUsers((state) => state.setUser);
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
     if (!accessToken) {
       return;
     }
+
+    const user = jwtDecode<any>(accessToken);
+    setUser(user.user.user as User);
+
     async function refreshAccessToken() {
       try {
         const accessToken = await authService.refreshAccessToken();

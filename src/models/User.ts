@@ -5,4 +5,5 @@ export interface User {
     description: string;
   };
   id: string;
+  liked: string[];
 }

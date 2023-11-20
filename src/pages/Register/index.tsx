@@ -14,6 +14,9 @@ import { useDebounce } from "../../hooks/useDebounce";
 import authService from "../../services/auth";
 import { useAuth } from "../../stores/auth";
 import { api } from "../../http/api";
+import { jwtDecode } from "jwt-decode";
+import { User } from "../../models/User";
+import { useUsers } from "../../stores/users";
 
 import * as Styled from "./Register.styled";
 
@@ -43,6 +46,7 @@ function RegisterPage() {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const setIsAuthed = useAuth((state) => state.setIsAuthed);
+  const setUser = useUsers((state) => state.setUser);
 
   const username = useDebounce(watch("username"));
   const duckDescription = useDebounce(watch("description"));
@@ -74,6 +78,8 @@ function RegisterPage() {
       const res = await authService.register({ ...data, ...images });
       localStorage.setItem("accessToken", res.accessToken);
       api.defaults.headers["Access-Token"] = `Bearer ${res.accessToken}`;
+      const user = jwtDecode<any>(res.accessToken);
+      setUser(user.user.user as User);
       setIsAuthed(true);
       reset();
       initStorage();

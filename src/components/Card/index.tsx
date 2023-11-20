@@ -19,7 +19,7 @@ function Card({ images, index, description }: CardProps) {
   const [styles, setStyles] = useState<CSSProperties>({});
   const cardRef = useRef<HTMLDivElement>();
 
-  const dislike = () => {
+  const dislike = async () => {
     setStyles({
       transform: "rotate(-30deg)",
       left: -90 - 320 + "px",

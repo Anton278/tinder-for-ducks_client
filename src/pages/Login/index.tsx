@@ -11,6 +11,9 @@ import EyeSlash from "../../components/Icons/EyeSlash";
 import authService from "../../services/auth";
 import { api } from "../../http/api";
 import { useAuth } from "../../stores/auth";
+import { User } from "../../models/User";
+import { jwtDecode } from "jwt-decode";
+import { useUsers } from "../../stores/users";
 
 import * as Styled from "./Login.styled";
 
@@ -27,6 +30,7 @@ function LoginPage() {
   } = useForm<Inputs>();
 
   const setIsAuthed = useAuth((state) => state.setIsAuthed);
+  const setUser = useUsers((state) => state.setUser);
 
   const [isSending, setIsSending] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -37,6 +41,8 @@ function LoginPage() {
       const res = await authService.login(data);
       localStorage.setItem("accessToken", res.accessToken);
       api.defaults.headers["Access-Token"] = `Bearer ${res.accessToken}`;
+      const user = jwtDecode<any>(res.accessToken);
+      setUser(user.user.user as User);
       setIsAuthed(true);
     } catch (err) {
     } finally {
