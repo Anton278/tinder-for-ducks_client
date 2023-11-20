@@ -3,8 +3,11 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { Link } from "react-router-dom";
 
+import { useAuth } from "../../stores/auth";
+
 function Header() {
-  const isAuthed = true;
+  const isAuthed = useAuth((state) => state.isAuthed);
+  const logout = useAuth((state) => state.logout);
 
   return (
     <header>
@@ -13,7 +16,9 @@ function Header() {
           <Navbar.Brand href="#">Tinder for ducks</Navbar.Brand>
           <Nav className="ms-auto">
             {isAuthed ? (
-              <Nav.Link as="button">Logout</Nav.Link>
+              <Nav.Link as="button" onClick={logout}>
+                Logout
+              </Nav.Link>
             ) : (
               <>
                 <Nav.Link

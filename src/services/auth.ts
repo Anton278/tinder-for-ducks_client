@@ -23,6 +23,12 @@ class AuthService {
     const res = await api.post("/auth/refreshAccessToken");
     return res.data.accessToken;
   }
+
+  async logout() {
+    await api.post("/auth/logout");
+    localStorage.removeItem("accessToken");
+    api.defaults.headers["Access-Token"] = `Bearer null`;
+  }
 }
 
 const authService = new AuthService();
