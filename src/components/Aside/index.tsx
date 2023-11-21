@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import ListGroup from "react-bootstrap/ListGroup";
 import Badge from "react-bootstrap/Badge";
 
@@ -14,40 +14,40 @@ function Aside() {
   return (
     <aside>
       <ListGroup defaultActiveKey="#link1">
-        <Styled.ListGroupItem action as={Link} to="/">
+        <Styled.ListGroupItem action as={NavLink} to="/">
           <div>
             <Home />
             Home
           </div>
         </Styled.ListGroupItem>
-        <Styled.ListGroupItem action as={Link} to="#">
+        <Styled.ListGroupItem action as={NavLink} to="/notifications">
           <div>
             <Bell />
             Notifications
           </div>
           <Badge bg="primary">1</Badge>
         </Styled.ListGroupItem>
-        <Styled.ListGroupItem action as={Link} to="#">
+        <Styled.ListGroupItem action as={NavLink} to="/matchs">
           <div>
             <Heart />
             Matchs
           </div>
           <Badge bg="primary">1</Badge>
         </Styled.ListGroupItem>
-        <Styled.ListGroupItem action as={Link} to="#">
+        <Styled.ListGroupItem action as={NavLink} to="/chats">
           <div>
             <Chat />
             Chats
           </div>
           <Badge bg="primary">2</Badge>
         </Styled.ListGroupItem>
-        <Styled.ListGroupItem action as={Link} to="#">
+        <Styled.ListGroupItem action as={NavLink} to="/liked">
           <div>
             <Heart />
             Liked
           </div>
         </Styled.ListGroupItem>
-        <Styled.ListGroupItem action as={Link} to="#">
+        <Styled.ListGroupItem action as={NavLink} to="/settings">
           <div>
             <Gear />
             Settings
