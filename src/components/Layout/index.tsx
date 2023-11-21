@@ -1,6 +1,6 @@
 import Header from "../Header";
 import Aside from "../Aside";
-import { useAuth } from "../../stores/auth";
+import { useUser } from "../../stores/user";
 
 import * as Styled from "./Layout.styled";
 
@@ -9,7 +9,7 @@ type LayoutProps = {
 };
 
 function Layout({ children }: LayoutProps) {
-  const isAuthed = useAuth((state) => state.isAuthed);
+  const isAuthed = useUser((state) => state.isAuthed);
 
   return (
     <>

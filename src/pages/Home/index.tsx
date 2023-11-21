@@ -29,6 +29,7 @@ function HomePage() {
             images={user.duck.images}
             description={user.duck.description}
             index={i}
+            id={user.id}
           />
         ))
       )}

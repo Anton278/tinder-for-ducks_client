@@ -3,7 +3,6 @@ import Button from "react-bootstrap/Button";
 import InputGroup from "react-bootstrap/InputGroup";
 import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
 import { useEffect, useState } from "react";
-import axios from "axios";
 
 import { passwordRegex } from "../../const";
 import Layout from "../../components/Layout";
@@ -12,13 +11,10 @@ import EyeSlash from "../../components/Icons/EyeSlash";
 import { getFromSS } from "../../utils/getFromSS";
 import { useDebounce } from "../../hooks/useDebounce";
 import authService from "../../services/auth";
-import { useAuth } from "../../stores/auth";
-import { api } from "../../http/api";
-import { jwtDecode } from "jwt-decode";
-import { User } from "../../models/User";
-import { useUsers } from "../../stores/users";
+import { useUser } from "../../stores/user";
 
 import * as Styled from "./Register.styled";
+import { api } from "../../http/api";
 
 type Inputs = {
   username: string;
@@ -29,6 +25,7 @@ type Inputs = {
 };
 
 function RegisterPage() {
+  const setUser = useUser((state) => state.setUser);
   const {
     control,
     register,
@@ -45,8 +42,6 @@ function RegisterPage() {
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const setIsAuthed = useAuth((state) => state.setIsAuthed);
-  const setUser = useUsers((state) => state.setUser);
 
   const username = useDebounce(watch("username"));
   const duckDescription = useDebounce(watch("description"));
@@ -78,9 +73,7 @@ function RegisterPage() {
       const res = await authService.register({ ...data, ...images });
       localStorage.setItem("accessToken", res.accessToken);
       api.defaults.headers["Access-Token"] = `Bearer ${res.accessToken}`;
-      const user = jwtDecode<any>(res.accessToken);
-      setUser(user.user.user as User);
-      setIsAuthed(true);
+      setUser(res.user);
       reset();
       initStorage();
     } catch (err: any) {

@@ -6,6 +6,7 @@ import type { CSSProperties } from "react";
 
 import Heart from "../../components/Icons/Heart";
 import Cancel from "../../components/Icons/Cancel";
+import { useUser } from "../../stores/user";
 
 import * as Styled from "./Card.styled";
 
@@ -13,26 +14,44 @@ type CardProps = {
   images: string[];
   index: number;
   description: string;
+  id: string;
 };
 
-function Card({ images, index, description }: CardProps) {
+function Card({ images, description, index, id }: CardProps) {
+  const user = useUser((state) => state.user);
+  const updateUser = useUser((state) => state.updateUser);
+  const [isSending, setIsSending] = useState(false);
   const [styles, setStyles] = useState<CSSProperties>({});
   const cardRef = useRef<HTMLDivElement>();
 
   const dislike = async () => {
-    setStyles({
-      transform: "rotate(-30deg)",
-      left: -90 - 320 + "px",
-      transition: "transform 0.15s ease-out, left 0.3s ease-out",
-    });
+    try {
+      setIsSending(true);
+      await updateUser({ ...user, disliked: [id] });
+      setStyles({
+        transform: "rotate(-30deg)",
+        left: -90 - 320 + "px",
+        transition: "transform 0.15s ease-out, left 0.3s ease-out",
+      });
+    } catch (err) {
+    } finally {
+      setIsSending(false);
+    }
   };
 
-  const like = () => {
-    setStyles({
-      transform: "rotate(30deg)",
-      left: "calc(100vw + 90px)",
-      transition: "transform 0.15s ease-out, left 0.3s ease-out",
-    });
+  const like = async () => {
+    try {
+      setIsSending(true);
+      await updateUser({ ...user, liked: [id] });
+      setStyles({
+        transform: "rotate(30deg)",
+        left: "calc(100vw + 90px)",
+        transition: "transform 0.15s ease-out, left 0.3s ease-out",
+      });
+    } catch (err) {
+    } finally {
+      setIsSending(false);
+    }
   };
 
   useLayoutEffect(() => {
@@ -178,10 +197,10 @@ function Card({ images, index, description }: CardProps) {
           gap={3}
           style={{ justifyContent: "center" }}
         >
-          <Button variant="danger" onClick={dislike}>
+          <Button variant="danger" onClick={dislike} disabled={isSending}>
             <Cancel />
           </Button>
-          <Button variant="success" onClick={like}>
+          <Button variant="success" onClick={like} disabled={isSending}>
             <Heart />
           </Button>
         </Stack>

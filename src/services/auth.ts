@@ -20,8 +20,13 @@ class AuthService {
   }
 
   async refreshAccessToken(): Promise<string> {
-    const res = await api.post("/auth/refreshAccessToken");
-    return res.data.accessToken;
+    const res = await api.post<{ accessToken: string }>(
+      "/auth/refreshAccessToken"
+    );
+    const accessToken = res.data.accessToken;
+    api.defaults.headers["Access-Token"] = `Bearer ${accessToken}`;
+    localStorage.setItem("accessToken", accessToken);
+    return accessToken;
   }
 
   async logout() {

@@ -4,20 +4,17 @@ import {
   Navigate,
 } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { useEffect } from "react";
 
 import RegisterPage from "./pages/Register";
 import LoginPage from "./pages/Login";
 import HomePage from "./pages/Home";
-import { useAuth } from "./stores/auth";
-import { useEffect } from "react";
 import authService from "./services/auth";
-import { useUsers } from "./stores/users";
-import { User } from "./models/User";
+import { useUser } from "./stores/user";
 
 function App() {
-  const isAuthed = useAuth((state) => state.isAuthed);
-  const setIsAuthed = useAuth((state) => state.setIsAuthed);
-  const setUser = useUsers((state) => state.setUser);
+  const isAuthed = useUser((state) => state.isAuthed);
+  const getUser = useUser((state) => state.getUser);
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
@@ -25,18 +22,16 @@ function App() {
       return;
     }
 
-    const user = jwtDecode<any>(accessToken);
-    setUser(user.user.user as User);
-
-    async function refreshAccessToken() {
+    async function init() {
       try {
         const accessToken = await authService.refreshAccessToken();
-        localStorage.setItem("accessToken", accessToken);
-        setIsAuthed(true);
+        const accessTokenPayload = jwtDecode<any>(accessToken);
+        const uid: string = accessTokenPayload.user.user.id;
+        await getUser(uid);
       } catch (err) {}
     }
 
-    refreshAccessToken();
+    init();
   }, []);
 
   const protectedRoutes = [

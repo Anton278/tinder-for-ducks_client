@@ -1,9 +1,13 @@
 export interface RegisterResponse {
   accessToken: string;
-  username: string;
-  duck: {
-    images: string[];
-    description: string;
+  user: {
+    username: string;
+    duck: {
+      images: string[];
+      description: string;
+    };
+    id: string;
+    liked: string[];
+    disliked: string[];
   };
-  id: string;
 }

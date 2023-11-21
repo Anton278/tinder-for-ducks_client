@@ -7,5 +7,7 @@ export interface LoginResponse {
       description: string;
     };
     id: string;
+    liked: string[];
+    disliked: string[];
   };
 }

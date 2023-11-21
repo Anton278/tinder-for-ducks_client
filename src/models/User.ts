@@ -6,4 +6,5 @@ export interface User {
   };
   id: string;
   liked: string[];
+  disliked: string[];
 }
