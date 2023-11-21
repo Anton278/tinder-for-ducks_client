@@ -3,11 +3,11 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { Link } from "react-router-dom";
 
-import { useAuth } from "../../stores/auth";
+import { useUser } from "../../stores/user";
 
 function Header() {
-  const isAuthed = useAuth((state) => state.isAuthed);
-  const logout = useAuth((state) => state.logout);
+  const isAuthed = useUser((state) => state.isAuthed);
+  const logout = useUser((state) => state.logout);
 
   return (
     <header>
