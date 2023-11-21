@@ -27,7 +27,7 @@ function Card({ images, description, index, id }: CardProps) {
   const dislike = async () => {
     try {
       setIsSending(true);
-      await updateUser({ ...user, disliked: [id] });
+      await updateUser({ ...user, disliked: [...user.disliked, id] });
       setStyles({
         transform: "rotate(-30deg)",
         left: -90 - 320 + "px",
@@ -42,7 +42,7 @@ function Card({ images, description, index, id }: CardProps) {
   const like = async () => {
     try {
       setIsSending(true);
-      await updateUser({ ...user, liked: [id] });
+      await updateUser({ ...user, liked: [...user.liked, id] });
       setStyles({
         transform: "rotate(30deg)",
         left: "calc(100vw + 90px)",

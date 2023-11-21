@@ -14,10 +14,8 @@ class UsersService {
   }
 
   async update(user: User): Promise<User> {
-    const res = await new Promise<User>((res, rej) =>
-      setTimeout(() => res(user), 1500)
-    );
-    return res;
+    const res = await api.put(`/users`, user);
+    return res.data;
   }
 }
 
