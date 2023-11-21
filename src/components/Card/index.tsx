@@ -15,9 +15,10 @@ type CardProps = {
   index: number;
   description: string;
   id: string;
+  swipable?: boolean;
 };
 
-function Card({ images, description, index, id }: CardProps) {
+function Card({ images, description, index, id, swipable = true }: CardProps) {
   const user = useUser((state) => state.user);
   const updateUser = useUser((state) => state.updateUser);
   const [isSending, setIsSending] = useState(false);
@@ -54,7 +55,23 @@ function Card({ images, description, index, id }: CardProps) {
     }
   };
 
+  const unlike = async () => {
+    try {
+      setIsSending(true);
+      await updateUser({
+        ...user,
+        liked: user.liked.filter((liked) => liked !== id),
+      });
+    } catch (err) {
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   useLayoutEffect(() => {
+    if (!swipable) {
+      return;
+    }
     function moveToCenter() {
       if (!cardRef.current) {
         return console.error("card ref is absent");
@@ -74,6 +91,9 @@ function Card({ images, description, index, id }: CardProps) {
   }, []);
 
   useEffect(() => {
+    if (!swipable) {
+      return;
+    }
     const card = cardRef.current;
     if (!card) {
       return console.error("card ref is absent");
@@ -169,6 +189,7 @@ function Card({ images, description, index, id }: CardProps) {
         ...styles,
       }}
       ref={cardRef}
+      $swipable={swipable}
     >
       {images.length === 1 ? (
         <Styled.Card.Img
@@ -195,14 +216,22 @@ function Card({ images, description, index, id }: CardProps) {
         <Stack
           direction="horizontal"
           gap={3}
-          style={{ justifyContent: "center" }}
+          style={{ justifyContent: swipable ? "center" : "flex-end" }}
         >
-          <Button variant="danger" onClick={dislike} disabled={isSending}>
-            <Cancel />
-          </Button>
-          <Button variant="success" onClick={like} disabled={isSending}>
-            <Heart />
-          </Button>
+          {swipable ? (
+            <>
+              <Button variant="danger" onClick={dislike} disabled={isSending}>
+                <Cancel />
+              </Button>
+              <Button variant="success" onClick={like} disabled={isSending}>
+                <Heart />
+              </Button>
+            </>
+          ) : (
+            <Button variant="success" onClick={unlike} disabled={isSending}>
+              Unlike
+            </Button>
+          )}
         </Stack>
       </Styled.Card.Body>
     </Styled.Card>

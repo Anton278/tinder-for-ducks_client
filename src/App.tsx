@@ -11,6 +11,7 @@ import LoginPage from "./pages/Login";
 import HomePage from "./pages/Home";
 import authService from "./services/auth";
 import { useUser } from "./stores/user";
+import LikedPage from "./pages/Liked";
 
 function App() {
   const isAuthed = useUser((state) => state.isAuthed);
@@ -38,6 +39,10 @@ function App() {
     {
       path: "/",
       element: <HomePage />,
+    },
+    {
+      path: "/liked",
+      element: <LikedPage />,
     },
   ];
   const publicRoutes = [
