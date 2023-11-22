@@ -9,8 +9,12 @@ import Gear from "../Icons/Gear";
 import Home from "../Icons/Home";
 
 import * as Styled from "./Aside.styled";
+import { useUser } from "../../stores/user";
 
 function Aside() {
+  const newMatchs = useUser((state) => state.user.newMatchs);
+  const newMatchsCount = newMatchs.length;
+
   return (
     <aside>
       <ListGroup defaultActiveKey="#link1">
@@ -32,7 +36,7 @@ function Aside() {
             <Heart />
             Matchs
           </div>
-          <Badge bg="primary">1</Badge>
+          {!!newMatchsCount && <Badge bg="primary">{newMatchsCount}</Badge>}
         </Styled.ListGroupItem>
         <Styled.ListGroupItem action as={NavLink} to="/chats">
           <div>

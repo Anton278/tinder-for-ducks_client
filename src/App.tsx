@@ -12,10 +12,17 @@ import HomePage from "./pages/Home";
 import authService from "./services/auth";
 import { useUser } from "./stores/user";
 import LikedPage from "./pages/Liked";
+import MatchsPage from "./pages/Matchs";
+import usersService from "./services/users";
 
 function App() {
   const isAuthed = useUser((state) => state.isAuthed);
+  const user = useUser((state) => state.user);
+  const uid = useUser((state) => state.user.id);
+  const userLiked = useUser((state) => state.user.liked);
+  const userMatchs = useUser((state) => state.user.matchs);
   const getUser = useUser((state) => state.getUser);
+  const updateUser = useUser((state) => state.updateUser);
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
@@ -35,6 +42,53 @@ function App() {
     init();
   }, []);
 
+  useEffect(() => {
+    if (!isAuthed) {
+      return;
+    }
+    const getNewMatches = async () => {
+      try {
+        const users = await usersService.getAll();
+        const user = users.find((user) => user.id === uid);
+        if (!user) {
+          return console.error("Unexpected error: can not find user");
+        }
+        const matchs = users.filter((candidate) => {
+          if (candidate.id === uid) {
+            return false;
+          }
+          if (
+            candidate.liked.includes(uid) &&
+            user.liked.includes(candidate.id)
+          ) {
+            return true;
+          }
+          return false;
+        });
+        console.log("calculated matchs ", matchs);
+
+        const newMatchs = matchs.filter(
+          (match) => !user.matchs.includes(match.id)
+        );
+        console.log("newMatchs ", newMatchs);
+
+        if (!newMatchs.length) {
+          return;
+        }
+        await updateUser({
+          ...user,
+          newMatchs: newMatchs.map((user) => user.id),
+        });
+      } catch (err) {}
+    };
+
+    const id = setInterval(() => getNewMatches(), 15000);
+
+    return () => {
+      clearInterval(id);
+    };
+  }, [isAuthed]);
+
   const protectedRoutes = [
     {
       path: "/",
@@ -43,6 +97,10 @@ function App() {
     {
       path: "/liked",
       element: <LikedPage />,
+    },
+    {
+      path: "/matchs",
+      element: <MatchsPage />,
     },
   ];
   const publicRoutes = [

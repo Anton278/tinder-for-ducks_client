@@ -8,6 +8,7 @@ import usersService from "../services/users";
 interface State {
   user: User;
   isAuthed: boolean;
+
   logout: () => Promise<void>;
   getUser: (id: string) => Promise<void>;
   setUser: (user: User) => void;
@@ -15,7 +16,7 @@ interface State {
 }
 
 export const useUser = create<State>()(
-  devtools((set) => ({
+  devtools((set, get) => ({
     user: {
       username: "",
       duck: {
@@ -25,6 +26,8 @@ export const useUser = create<State>()(
       id: "",
       liked: [],
       disliked: [],
+      matchs: [],
+      newMatchs: [],
     },
     isAuthed: false,
 

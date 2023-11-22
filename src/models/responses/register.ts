@@ -9,5 +9,7 @@ export interface RegisterResponse {
     id: string;
     liked: string[];
     disliked: string[];
+    matchs: string[];
+    newMatchs: string[];
   };
 }

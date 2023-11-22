@@ -35,6 +35,7 @@ function Card({ images, description, index, id, swipable = true }: CardProps) {
         transition: "transform 0.15s ease-out, left 0.3s ease-out",
       });
     } catch (err) {
+      console.log(err);
     } finally {
       setIsSending(false);
     }
