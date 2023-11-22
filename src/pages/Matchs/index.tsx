@@ -79,6 +79,7 @@ function MatchsPage() {
               index={i}
               id={user.id}
               swipable={false}
+              buttonType="message"
             />
           ))}
         </Styled.CardsWrapper>

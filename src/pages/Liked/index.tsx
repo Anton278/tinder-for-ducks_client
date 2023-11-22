@@ -47,6 +47,7 @@ function LikedPage() {
               index={i}
               id={user.id}
               swipable={false}
+              buttonType="unlike"
             />
           ))}
         </Styled.CardsWrapper>

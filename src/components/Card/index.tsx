@@ -16,9 +16,17 @@ type CardProps = {
   description: string;
   id: string;
   swipable?: boolean;
+  buttonType?: "" | "unlike" | "message";
 };
 
-function Card({ images, description, index, id, swipable = true }: CardProps) {
+function Card({
+  images,
+  description,
+  index,
+  id,
+  swipable = true,
+  buttonType = "",
+}: CardProps) {
   const user = useUser((state) => state.user);
   const updateUser = useUser((state) => state.updateUser);
   const [isSending, setIsSending] = useState(false);
@@ -219,7 +227,7 @@ function Card({ images, description, index, id, swipable = true }: CardProps) {
           gap={3}
           style={{ justifyContent: swipable ? "center" : "flex-end" }}
         >
-          {swipable ? (
+          {!buttonType ? (
             <>
               <Button variant="danger" onClick={dislike} disabled={isSending}>
                 <Cancel />
@@ -228,10 +236,12 @@ function Card({ images, description, index, id, swipable = true }: CardProps) {
                 <Heart />
               </Button>
             </>
-          ) : (
+          ) : buttonType === "unlike" ? (
             <Button variant="success" onClick={unlike} disabled={isSending}>
               Unlike
             </Button>
+          ) : (
+            <Button variant="success">Message</Button>
           )}
         </Stack>
       </Styled.Card.Body>
