@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 
 import Layout from "../../components/Layout";
 import { useUser } from "../../stores/user";
+import { User } from "../../models/User";
+import usersService from "../../services/users";
+import Card from "../../components/Card";
 
 import * as Styled from "./Matchs.styled";
-import usersService from "../../services/users";
-import { User } from "../../models/User";
-import Card from "../../components/Card";
 
 function MatchsPage() {
   const [data, setData] = useState<User[]>([]);

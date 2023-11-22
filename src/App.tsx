@@ -17,10 +17,7 @@ import usersService from "./services/users";
 
 function App() {
   const isAuthed = useUser((state) => state.isAuthed);
-  const user = useUser((state) => state.user);
   const uid = useUser((state) => state.user.id);
-  const userLiked = useUser((state) => state.user.liked);
-  const userMatchs = useUser((state) => state.user.matchs);
   const getUser = useUser((state) => state.getUser);
   const updateUser = useUser((state) => state.updateUser);
 
@@ -65,12 +62,10 @@ function App() {
           }
           return false;
         });
-        console.log("calculated matchs ", matchs);
 
         const newMatchs = matchs.filter(
           (match) => !user.matchs.includes(match.id)
         );
-        console.log("newMatchs ", newMatchs);
 
         if (!newMatchs.length) {
           return;
