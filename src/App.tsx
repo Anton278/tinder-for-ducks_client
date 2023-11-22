@@ -13,6 +13,7 @@ import LikedPage from "./pages/Liked";
 import MatchsPage from "./pages/Matchs";
 import usersService from "./services/users";
 import NotificationsPage from "./pages/Notifications";
+import ChatsPage from "./pages/Chats";
 
 import authService from "./services/auth";
 import { useUser } from "./stores/user";
@@ -110,6 +111,10 @@ function App() {
     {
       path: "/notifications",
       element: <NotificationsPage />,
+    },
+    {
+      path: "/chats",
+      element: <ChatsPage />,
     },
   ];
   const publicRoutes = [
