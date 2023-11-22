@@ -1,3 +1,5 @@
+import { Notification } from "./Notification";
+
 export interface User {
   username: string;
   duck: {
@@ -9,4 +11,8 @@ export interface User {
   disliked: string[];
   matchs: string[];
   newMatchs: string[];
+  notifications: {
+    old: Notification[];
+    new: Notification[];
+  };
 }

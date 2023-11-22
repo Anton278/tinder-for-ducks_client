@@ -12,6 +12,7 @@ import * as Styled from "./Aside.styled";
 import { useUser } from "../../stores/user";
 
 function Aside() {
+  const newNotifications = useUser((state) => state.user.notifications.new);
   const newMatchs = useUser((state) => state.user.newMatchs);
   const newMatchsCount = newMatchs.length;
 
@@ -29,7 +30,9 @@ function Aside() {
             <Bell />
             Notifications
           </div>
-          <Badge bg="primary">1</Badge>
+          {!!newNotifications.length && (
+            <Badge bg="primary">{newNotifications.length}</Badge>
+          )}
         </Styled.ListGroupItem>
         <Styled.ListGroupItem action as={NavLink} to="/matchs">
           <div>

@@ -6,14 +6,16 @@ import {
 import { jwtDecode } from "jwt-decode";
 import { useEffect } from "react";
 
+import HomePage from "./pages/Home";
 import RegisterPage from "./pages/Register";
 import LoginPage from "./pages/Login";
-import HomePage from "./pages/Home";
-import authService from "./services/auth";
-import { useUser } from "./stores/user";
 import LikedPage from "./pages/Liked";
 import MatchsPage from "./pages/Matchs";
 import usersService from "./services/users";
+import NotificationsPage from "./pages/Notifications";
+
+import authService from "./services/auth";
+import { useUser } from "./stores/user";
 
 function App() {
   const isAuthed = useUser((state) => state.isAuthed);
@@ -73,6 +75,14 @@ function App() {
         await updateUser({
           ...user,
           newMatchs: newMatchs.map((user) => user.id),
+          notifications: {
+            ...user.notifications,
+            new: [
+              newMatchs.length === 1
+                ? { type: "newMatch" }
+                : { type: "newMatchs", count: newMatchs.length },
+            ],
+          },
         });
       } catch (err) {}
     };
@@ -96,6 +106,10 @@ function App() {
     {
       path: "/matchs",
       element: <MatchsPage />,
+    },
+    {
+      path: "/notifications",
+      element: <NotificationsPage />,
     },
   ];
   const publicRoutes = [

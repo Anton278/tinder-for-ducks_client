@@ -28,6 +28,7 @@ export const useUser = create<State>()(
       disliked: [],
       matchs: [],
       newMatchs: [],
+      notifications: { old: [], new: [] },
     },
     isAuthed: false,
 

@@ -1,3 +1,5 @@
+import { Notification } from "../Notification";
+
 export interface LoginResponse {
   accessToken: string;
   user: {
@@ -11,5 +13,9 @@ export interface LoginResponse {
     disliked: string[];
     matchs: string[];
     newMatchs: string[];
+    notifications: {
+      new: Notification[];
+      old: Notification[];
+    };
   };
 }
