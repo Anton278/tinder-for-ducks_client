@@ -1,3 +1,5 @@
+import PersonIcon from "../Icons/Person";
+
 import * as Styled from "./Avatar.styled";
 
 type AvatarProps = {
@@ -7,7 +9,11 @@ type AvatarProps = {
 function Avatar({ src }: AvatarProps) {
   return (
     <Styled.Avatar>
-      <img src={src} alt="avatar" width={65} height={65} />
+      {src ? (
+        <img src={src} alt="avatar" width={65} height={65} />
+      ) : (
+        <PersonIcon />
+      )}
     </Styled.Avatar>
   );
 }
