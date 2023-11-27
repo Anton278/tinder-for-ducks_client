@@ -29,6 +29,7 @@ export const useUser = create<State>()(
       matchs: [],
       newMatchs: [],
       notifications: { old: [], new: [] },
+      chats: [],
     },
     isAuthed: false,
 

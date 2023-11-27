@@ -2,11 +2,13 @@ import Button from "react-bootstrap/Button";
 import Stack from "react-bootstrap/Stack";
 import Carousel from "react-bootstrap/Carousel";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import type { CSSProperties } from "react";
 
 import Heart from "../../components/Icons/Heart";
 import Cancel from "../../components/Icons/Cancel";
 import { useUser } from "../../stores/user";
+import chatsService from "../../services/chats";
 
 import * as Styled from "./Card.styled";
 
@@ -27,6 +29,7 @@ function Card({
   swipable = true,
   buttonType = "",
 }: CardProps) {
+  const navigate = useNavigate();
   const user = useUser((state) => state.user);
   const updateUser = useUser((state) => state.updateUser);
   const [isSending, setIsSending] = useState(false);
@@ -72,6 +75,26 @@ function Card({
         liked: user.liked.filter((liked) => liked !== id),
       });
     } catch (err) {
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const createChat = async () => {
+    try {
+      setIsSending(true);
+      const chats = await chatsService.getAll();
+      const chat = chats.find(
+        (chat) => chat.users.includes(id) && chat.users.includes(user.id)
+      );
+      if (chat) {
+        navigate(`/chats/${chat.id}`);
+      } else {
+        const createdChat = await chatsService.create([user.id, id]);
+        navigate(`/chats/${createdChat.id}`);
+      }
+    } catch (err) {
+      console.log(err);
     } finally {
       setIsSending(false);
     }
@@ -241,7 +264,9 @@ function Card({
               Unlike
             </Button>
           ) : (
-            <Button variant="success">Message</Button>
+            <Button variant="success" onClick={createChat} disabled={isSending}>
+              Message
+            </Button>
           )}
         </Stack>
       </Styled.Card.Body>
