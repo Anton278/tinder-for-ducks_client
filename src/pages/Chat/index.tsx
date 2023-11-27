@@ -23,7 +23,7 @@ function ChatPage() {
             <Button variant="light" onClick={() => navigate("/chats")}>
               <ArrowLeft />
             </Button>
-            <Avatar />
+            <Avatar src="/duck.jfif" />
             <p>
               <b>sarah001</b>
             </p>

@@ -1,9 +1,13 @@
 import * as Styled from "./Avatar.styled";
 
-function Avatar() {
+type AvatarProps = {
+  src: string | undefined;
+};
+
+function Avatar({ src }: AvatarProps) {
   return (
     <Styled.Avatar>
-      <img src="/duck.jfif" alt="avatar" width={65} height={65} />
+      <img src={src} alt="avatar" width={65} height={65} />
     </Styled.Avatar>
   );
 }
