@@ -14,6 +14,7 @@ import MatchsPage from "./pages/Matchs";
 import usersService from "./services/users";
 import NotificationsPage from "./pages/Notifications";
 import ChatsPage from "./pages/Chats";
+import ChatPage from "./pages/Chat";
 
 import authService from "./services/auth";
 import { useUser } from "./stores/user";
@@ -115,6 +116,10 @@ function App() {
     {
       path: "/chats",
       element: <ChatsPage />,
+    },
+    {
+      path: "/chats/:id",
+      element: <ChatPage />,
     },
   ];
   const publicRoutes = [

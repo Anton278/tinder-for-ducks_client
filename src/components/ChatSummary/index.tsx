@@ -4,7 +4,7 @@ import * as Styled from "./ChatSummary.styled";
 
 function ChatSummary() {
   return (
-    <Styled.ChatSummary to="#">
+    <Styled.ChatSummary to="/chats/1">
       <Avatar />
       <div>
         <p>
