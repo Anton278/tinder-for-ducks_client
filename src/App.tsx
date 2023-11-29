@@ -15,6 +15,7 @@ import usersService from "./services/users";
 import NotificationsPage from "./pages/Notifications";
 import ChatsPage from "./pages/Chats";
 import ChatPage from "./pages/Chat";
+import SettingsPage from "./pages/Settings";
 
 import authService from "./services/auth";
 import { useUser } from "./stores/user";
@@ -120,6 +121,10 @@ function App() {
     {
       path: "/chats/:id",
       element: <ChatPage />,
+    },
+    {
+      path: "/settings",
+      element: <SettingsPage />,
     },
   ];
   const publicRoutes = [

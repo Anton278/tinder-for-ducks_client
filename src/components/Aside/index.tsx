@@ -17,7 +17,7 @@ function Aside() {
   const newMatchsCount = newMatchs.length;
 
   return (
-    <aside>
+    <Styled.Aside>
       <ListGroup defaultActiveKey="#link1">
         <Styled.ListGroupItem action as={NavLink} to="/">
           <div>
@@ -61,7 +61,7 @@ function Aside() {
           </div>
         </Styled.ListGroupItem>
       </ListGroup>
-    </aside>
+    </Styled.Aside>
   );
 }
 
