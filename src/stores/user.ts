@@ -31,7 +31,7 @@ export const useUser = create<State>()(
       notifications: { old: [], new: [] },
       chats: [],
     },
-    isAuthed: false,
+    isAuthed: !!localStorage.getItem("accessToken"),
 
     logout: async () => {
       try {
