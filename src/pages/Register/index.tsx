@@ -4,7 +4,7 @@ import InputGroup from "react-bootstrap/InputGroup";
 import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
 import { useEffect, useState } from "react";
 
-import { passwordRegex } from "../../const";
+import { emailRegex, passwordRegex } from "../../const";
 import Layout from "../../components/Layout";
 import Eye from "../../components/Icons/Eye";
 import EyeSlash from "../../components/Icons/EyeSlash";
@@ -17,6 +17,7 @@ import * as Styled from "./Register.styled";
 import { api } from "../../http/api";
 
 type Inputs = {
+  email: string;
   username: string;
   password: string;
   repeatPassword: string;
@@ -133,6 +134,26 @@ function RegisterPage() {
         <div style={{ maxWidth: 370, width: "100%" }}>
           <Styled.Title>Registration</Styled.Title>
           <Form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
+            <Form.Group className="mb-3" controlId="email">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="johndoe@gmail.com"
+                {...register("email", {
+                  required: true,
+                  pattern: emailRegex,
+                })}
+                isInvalid={!!errors.email}
+              />
+              {errors.email && (
+                <Form.Control.Feedback type="invalid">
+                  {errors.email.type === "required"
+                    ? "Required"
+                    : "Invalid email"}
+                </Form.Control.Feedback>
+              )}
+            </Form.Group>
+
             <Form.Group className="mb-3" controlId="username">
               <Form.Label>Username</Form.Label>
               <Form.Control
