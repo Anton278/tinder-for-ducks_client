@@ -1,5 +1,5 @@
 import Layout from "../../components/Layout";
-import ChangePassword from "../../components/Settings/ChangePassword";
+import ChangePassword from "components/Settings/ChangePassword";
 import ProfileInfoSettings from "../../components/Settings/ProfileInfo";
 
 import * as Styled from "./Settings.styled";
