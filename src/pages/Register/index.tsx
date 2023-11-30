@@ -1,22 +1,20 @@
 import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import InputGroup from "react-bootstrap/InputGroup";
 import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
 import { useEffect, useState } from "react";
 
-import { emailRegex, passwordRegex } from "../../const";
 import Layout from "../../components/Layout";
-import Eye from "../../components/Icons/Eye";
-import EyeSlash from "../../components/Icons/EyeSlash";
 import { getFromSS } from "../../utils/getFromSS";
 import { useDebounce } from "../../hooks/useDebounce";
 import authService from "../../services/auth";
 import { useUser } from "../../stores/user";
+import { api } from "../../http/api";
+import Stepper from "components/UI/Stepper";
+import RegisterFormFirstStep from "components/business/RegisterForm/FirstStep";
+import RegisterFormSecondStep from "components/business/RegisterForm/SecondStep";
 
 import * as Styled from "./Register.styled";
-import { api } from "../../http/api";
 
-type Inputs = {
+export type RegisterInputs = {
   email: string;
   username: string;
   password: string;
@@ -35,14 +33,14 @@ function RegisterPage() {
     watch,
     setValue,
     reset,
-  } = useForm<Inputs>();
+  } = useForm<RegisterInputs>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "images",
   });
+  const [activeStep, setActiveStep] = useState(1);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
 
   const username = useDebounce(watch("username"));
   const duckDescription = useDebounce(watch("description"));
@@ -57,7 +55,7 @@ function RegisterPage() {
     );
   };
 
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+  const onSubmit: SubmitHandler<RegisterInputs> = async (data) => {
     const images = data.images.reduce((acc, image, index) => {
       if (image.value[0]) {
         const key = `image${index + 1}`;
@@ -133,161 +131,31 @@ function RegisterPage() {
       <Styled.Wrapper>
         <div style={{ maxWidth: 370, width: "100%" }}>
           <Styled.Title>Registration</Styled.Title>
-          <Form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
-            <Form.Group className="mb-3" controlId="email">
-              <Form.Label>Email</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="johndoe@gmail.com"
-                {...register("email", {
-                  required: true,
-                  pattern: emailRegex,
-                })}
-                isInvalid={!!errors.email}
+          <div>
+            <Stepper
+              activeStep={activeStep}
+              steps={2}
+              onStepClick={(step) => setActiveStep(step)}
+            />
+            <Form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
+              <RegisterFormFirstStep
+                activeStep={activeStep}
+                register={register}
+                errors={errors}
+                watch={watch}
+                setActiveStep={setActiveStep}
               />
-              {errors.email && (
-                <Form.Control.Feedback type="invalid">
-                  {errors.email.type === "required"
-                    ? "Required"
-                    : "Invalid email"}
-                </Form.Control.Feedback>
-              )}
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="username">
-              <Form.Label>Username</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="john001"
-                {...register("username", {
-                  required: true,
-                  validate: {
-                    inLowerCase: (v) => v.toLowerCase() === v,
-                    withoutWhitespaces: (v) => !v.trim().includes(" "),
-                  },
-                })}
-                isInvalid={!!errors.username}
+              <RegisterFormSecondStep
+                activeStep={activeStep}
+                register={register}
+                fields={fields}
+                errors={errors}
+                remove={remove}
+                submitButtonDisabled={isSending}
+                setActiveStep={setActiveStep}
               />
-              {errors.username && (
-                <Form.Control.Feedback type="invalid">
-                  {errors.username.type === "required"
-                    ? "Required"
-                    : "Username must be in lowercase, without whitespaces"}
-                </Form.Control.Feedback>
-              )}
-            </Form.Group>
-
-            <Form.Label htmlFor="password">Password</Form.Label>
-            <InputGroup className="mb-3">
-              <Form.Control
-                type={showPassword ? "text" : "password"}
-                {...register("password", {
-                  required: true,
-                  pattern: passwordRegex,
-                })}
-                isInvalid={!!errors.password}
-                id="password"
-              />
-              <Button
-                variant="outline-secondary"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeSlash /> : <Eye />}
-              </Button>
-              {errors.password && (
-                <Form.Control.Feedback type="invalid">
-                  {errors.password.type === "required"
-                    ? "Required"
-                    : "8 characters, 1 uppercase letter, 1 lowercase letter and 1 number"}
-                </Form.Control.Feedback>
-              )}
-            </InputGroup>
-
-            <Form.Group className="mb-3" controlId="repeat-password">
-              <Form.Label>Repeat password</Form.Label>
-              <Form.Control
-                type="password"
-                {...register("repeatPassword", {
-                  required: true,
-                  validate: {
-                    match: (v) => v === watch("password"),
-                  },
-                })}
-                isInvalid={!!errors.repeatPassword}
-              />
-              {errors.repeatPassword && (
-                <Form.Control.Feedback type="invalid">
-                  {errors.repeatPassword.type === "required"
-                    ? "Required"
-                    : "Password doesn't match"}
-                </Form.Control.Feedback>
-              )}
-            </Form.Group>
-
-            <p>Duck images</p>
-            <Styled.ImagesList>
-              {fields.map((field, index) => (
-                <Styled.ImagesListItem key={field.id}>
-                  {index !== 0 && (
-                    <Styled.RemoveButton
-                      type="button"
-                      onClick={() => remove(index)}
-                    >
-                      -
-                    </Styled.RemoveButton>
-                  )}
-                  <Form.Control
-                    type="file"
-                    accept="image/*"
-                    {...register(`images.${index}.value` as const, {
-                      required: true,
-                    })}
-                  />
-                </Styled.ImagesListItem>
-              ))}
-            </Styled.ImagesList>
-            {fields.length < 5 && (
-              <Styled.AddButtonWrapper>
-                <Button
-                  variant="primary"
-                  type="button"
-                  // @ts-ignore
-                  onClick={() => append({})}
-                >
-                  +
-                </Button>
-              </Styled.AddButtonWrapper>
-            )}
-
-            <Form.Group
-              className="mb-3"
-              controlId="exampleForm.ControlTextarea1"
-            >
-              <Form.Label>Duck Description</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                {...register("description", {
-                  required: true,
-                })}
-                isInvalid={!!errors.description}
-              />
-              {errors.description && (
-                <Form.Control.Feedback type="invalid">
-                  Required
-                </Form.Control.Feedback>
-              )}
-            </Form.Group>
-
-            <Styled.BottomButtons>
-              <Button type="reset" variant="secondary" onClick={initStorage}>
-                Reset
-              </Button>
-              <Button variant="primary" type="submit" disabled={isSending}>
-                Submit
-              </Button>
-            </Styled.BottomButtons>
-          </Form>
+            </Form>
+          </div>
         </div>
       </Styled.Wrapper>
     </Layout>
