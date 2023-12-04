@@ -3,6 +3,7 @@ import Dropdown from "react-bootstrap/Dropdown";
 import { useNavigate } from "react-router-dom";
 import Stack from "react-bootstrap/Stack";
 import Form from "react-bootstrap/Form";
+import { useRef, useEffect } from "react";
 
 import Avatar from "../../components/Avatar";
 import ThreeDotsVert from "../../components/Icons/ThreeDotsVert";
@@ -13,7 +14,30 @@ import Ban from "../../components/Icons/Ban";
 import * as Styled from "./Chat.styled";
 
 function ChatPage() {
+  const ws = useRef<WebSocket | undefined>();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    ws.current = new WebSocket("ws://localhost:5001");
+    ws.current.onopen = (e) => {
+      console.log("ws open ", e);
+    };
+    ws.current.onclose = (e) => {
+      console.log("ws closed ", e);
+    };
+    ws.current.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      console.log(data, typeof data);
+    };
+
+    const id = setInterval(() => {
+      ws.current?.send(JSON.stringify({ event: "heartbeat", message: "ping" }));
+    }, 25000);
+
+    return () => {
+      clearInterval(id);
+    };
+  }, []);
 
   return (
     <Layout>
