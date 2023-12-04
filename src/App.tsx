@@ -102,10 +102,10 @@ function App() {
       path: "/",
       element: <HomePage />,
     },
-    {
-      path: "/liked",
-      element: <LikedPage />,
-    },
+    // {
+    //   path: "/liked",
+    //   element: <LikedPage />,
+    // },
     {
       path: "/matchs",
       element: <MatchsPage />,
