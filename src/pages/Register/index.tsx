@@ -11,6 +11,7 @@ import { api } from "../../http/api";
 import Stepper from "components/UI/Stepper";
 import RegisterFormFirstStep from "components/business/RegisterForm/FirstStep";
 import RegisterFormSecondStep from "components/business/RegisterForm/SecondStep";
+import { AxiosError } from "axios";
 
 import * as Styled from "./Register.styled";
 
@@ -76,7 +77,8 @@ function RegisterPage() {
       reset();
       initStorage();
     } catch (err: any) {
-      setError(err.message);
+      const error = err as AxiosError<{ message: string }>;
+      setError(error.response?.data.message || "Failed to register");
     } finally {
       setIsSending(false);
     }
@@ -155,9 +157,7 @@ function RegisterPage() {
             />
           </Form>
           {error && (
-            <Styled.Error className="text-danger">
-              Failed to register
-            </Styled.Error>
+            <Styled.Error className="text-danger">{error}</Styled.Error>
           )}
         </div>
       </Styled.Wrapper>
