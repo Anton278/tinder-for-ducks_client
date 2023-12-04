@@ -131,31 +131,34 @@ function RegisterPage() {
       <Styled.Wrapper>
         <div style={{ maxWidth: 370, width: "100%" }}>
           <Styled.Title>Registration</Styled.Title>
-          <div>
-            <Stepper
+          <Stepper
+            activeStep={activeStep}
+            steps={2}
+            onStepClick={(step) => setActiveStep(step)}
+          />
+          <Form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
+            <RegisterFormFirstStep
               activeStep={activeStep}
-              steps={2}
-              onStepClick={(step) => setActiveStep(step)}
+              register={register}
+              errors={errors}
+              watch={watch}
+              setActiveStep={setActiveStep}
             />
-            <Form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
-              <RegisterFormFirstStep
-                activeStep={activeStep}
-                register={register}
-                errors={errors}
-                watch={watch}
-                setActiveStep={setActiveStep}
-              />
-              <RegisterFormSecondStep
-                activeStep={activeStep}
-                register={register}
-                fields={fields}
-                errors={errors}
-                remove={remove}
-                submitButtonDisabled={isSending}
-                setActiveStep={setActiveStep}
-              />
-            </Form>
-          </div>
+            <RegisterFormSecondStep
+              activeStep={activeStep}
+              register={register}
+              fields={fields}
+              errors={errors}
+              remove={remove}
+              submitButtonDisabled={isSending}
+              setActiveStep={setActiveStep}
+            />
+          </Form>
+          {error && (
+            <Styled.Error className="text-danger">
+              Failed to register
+            </Styled.Error>
+          )}
         </div>
       </Styled.Wrapper>
     </Layout>

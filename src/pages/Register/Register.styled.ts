@@ -13,3 +13,8 @@ export const Title = styled.h2`
   text-align: center;
   margin-bottom: 40px;
 `;
+
+export const Error = styled.p`
+  margin-top: 20px;
+  text-align: center;
+`;
