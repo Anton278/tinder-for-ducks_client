@@ -4,6 +4,7 @@ import Button from "react-bootstrap/Button";
 import { SubmitHandler, useForm } from "react-hook-form";
 import InputGroup from "react-bootstrap/InputGroup";
 import { useState } from "react";
+import { AxiosError } from "axios";
 
 import Layout from "../../components/Layout";
 import Eye from "../../components/Icons/Eye";
@@ -29,16 +30,24 @@ function LoginPage() {
   const setUser = useUser((state) => state.setUser);
 
   const [isSending, setIsSending] = useState(false);
+  const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
+      setError("");
       setIsSending(true);
       const res = await authService.login(data);
       localStorage.setItem("accessToken", res.accessToken);
       api.defaults.headers["Access-Token"] = `Bearer ${res.accessToken}`;
       setUser(res.user);
-    } catch (err) {
+    } catch (err: any) {
+      const error = err as AxiosError;
+      setError(
+        error.response?.status === 400
+          ? "Wrong username or password"
+          : "Failed to login"
+      );
     } finally {
       setIsSending(false);
     }
@@ -48,7 +57,7 @@ function LoginPage() {
     <Layout>
       <Styled.Wrapper>
         <div style={{ maxWidth: 370, width: "100%" }}>
-          <h2>Login</h2>
+          <Styled.Title>Login</Styled.Title>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <Form.Group className="mb-3" controlId="username">
               <Form.Label>Username</Form.Label>
@@ -93,6 +102,9 @@ function LoginPage() {
                 Submit
               </Button>
             </Stack>
+            {error && (
+              <Styled.Error className="text-danger">{error}</Styled.Error>
+            )}
           </Form>
         </div>
       </Styled.Wrapper>
