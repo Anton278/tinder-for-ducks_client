@@ -1,17 +1,16 @@
 import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
 import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
 import { useEffect, useState } from "react";
+import type { AxiosError } from "axios";
 
 import Layout from "../../components/Layout";
-import { getFromSS } from "../../utils/getFromSS";
-import { useDebounce } from "../../hooks/useDebounce";
 import authService from "../../services/auth";
 import { useUser } from "../../stores/user";
+import Input from "components/Input";
 import { api } from "../../http/api";
-import Stepper from "components/UI/Stepper";
-import RegisterFormFirstStep from "components/business/RegisterForm/FirstStep";
-import RegisterFormSecondStep from "components/business/RegisterForm/SecondStep";
-import { AxiosError } from "axios";
+import { emailRegex, passwordRegex } from "const";
+import UsernameInput from "components/business/UsernameInput";
 
 import * as Styled from "./Register.styled";
 
@@ -32,29 +31,14 @@ function RegisterPage() {
     handleSubmit,
     formState: { errors },
     watch,
-    setValue,
     reset,
   } = useForm<RegisterInputs>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "images",
   });
-  const [activeStep, setActiveStep] = useState(1);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
-
-  const username = useDebounce(watch("username"));
-  const duckDescription = useDebounce(watch("description"));
-
-  const initStorage = () => {
-    sessionStorage.setItem(
-      "registerFormData",
-      JSON.stringify({
-        username: "",
-        duckDescription: "",
-      })
-    );
-  };
 
   const onSubmit: SubmitHandler<RegisterInputs> = async (data) => {
     const images = data.images.reduce((acc, image, index) => {
@@ -75,7 +59,6 @@ function RegisterPage() {
       api.defaults.headers["Access-Token"] = `Bearer ${res.accessToken}`;
       setUser(res.user);
       reset();
-      initStorage();
     } catch (err: any) {
       const error = err as AxiosError<{ message: string }>;
       setError(error.response?.data.message || "Failed to register");
@@ -85,76 +68,145 @@ function RegisterPage() {
   };
 
   useEffect(() => {
-    const registerFormData = getFromSS<{
-      username: string;
-      duckDescription: string;
-    }>("registerFormData");
-    if (registerFormData !== null) {
-      setValue("username", registerFormData.username);
-      setValue("description", registerFormData.duckDescription);
-    } else {
-      initStorage();
-    }
-
     append("");
   }, []);
-
-  useEffect(() => {
-    if (
-      typeof username === "undefined" ||
-      typeof duckDescription === "undefined"
-    ) {
-      return;
-    }
-    const registerFormData = getFromSS<{
-      username: string;
-      duckDescription: string;
-    }>("registerFormData");
-    if (registerFormData === null) {
-      return;
-    }
-    if (
-      registerFormData.username === username &&
-      registerFormData.duckDescription === duckDescription
-    ) {
-      return;
-    }
-    sessionStorage.setItem(
-      "registerFormData",
-      JSON.stringify({
-        username,
-        duckDescription,
-      })
-    );
-  }, [username, duckDescription]);
 
   return (
     <Layout>
       <Styled.Wrapper>
         <div style={{ maxWidth: 370, width: "100%" }}>
           <Styled.Title>Registration</Styled.Title>
-          <Stepper
-            activeStep={activeStep}
-            steps={2}
-            onStepClick={(step) => setActiveStep(step)}
-          />
           <Form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
-            <RegisterFormFirstStep
-              activeStep={activeStep}
-              register={register}
-              errors={errors}
+            <Form.Group className="mb-3" controlId="email">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="johndoe@gmail.com"
+                {...register("email", {
+                  required: true,
+                  pattern: emailRegex,
+                })}
+                isInvalid={!!errors.email}
+              />
+              {errors.email && (
+                <Form.Control.Feedback type="invalid">
+                  {errors.email.type === "required"
+                    ? "Required"
+                    : "Invalid email"}
+                </Form.Control.Feedback>
+              )}
+            </Form.Group>
+
+            <UsernameInput
               watch={watch}
-              setActiveStep={setActiveStep}
-            />
-            <RegisterFormSecondStep
-              activeStep={activeStep}
               register={register}
-              fields={fields}
-              errors={errors}
-              remove={remove}
-              submitButtonDisabled={isSending}
-              setActiveStep={setActiveStep}
+              error={errors.username}
             />
+
+            <Form.Label htmlFor="password">Password</Form.Label>
+            <div className="mb-3">
+              <Input
+                type="password"
+                {...register("password", {
+                  required: true,
+                  pattern: passwordRegex,
+                })}
+                id="password"
+                error={
+                  errors.password?.type === "required"
+                    ? "Required"
+                    : errors.password?.type === "pattern"
+                    ? "8 characters, 1 uppercase letter, 1 lowercase letter and 1 number"
+                    : undefined
+                }
+              />
+            </div>
+
+            <Form.Group className="mb-4" controlId="repeat-password">
+              <Form.Label>Repeat password</Form.Label>
+              <Form.Control
+                type="password"
+                {...register("repeatPassword", {
+                  required: true,
+                  validate: {
+                    match: (v) => v === watch("password"),
+                  },
+                })}
+                isInvalid={!!errors.repeatPassword}
+              />
+              {errors.repeatPassword && (
+                <Form.Control.Feedback type="invalid">
+                  {errors.repeatPassword.type === "required"
+                    ? "Required"
+                    : "Password doesn't match"}
+                </Form.Control.Feedback>
+              )}
+            </Form.Group>
+            <p>Duck images</p>
+            <Styled.ImagesList>
+              {fields.map((field, index) => (
+                <Styled.ImagesListItem key={field.id}>
+                  {index !== 0 && (
+                    <Styled.RemoveButton
+                      type="button"
+                      onClick={() => remove(index)}
+                    >
+                      -
+                    </Styled.RemoveButton>
+                  )}
+                  <Form.Control
+                    type="file"
+                    accept="image/*"
+                    {...register(`images.${index}.value` as const, {
+                      required: true,
+                    })}
+                  />
+                </Styled.ImagesListItem>
+              ))}
+            </Styled.ImagesList>
+            {fields.length < 5 && (
+              <Styled.AddButtonWrapper>
+                <Button
+                  variant="primary"
+                  type="button"
+                  // @ts-ignore
+                  onClick={() => append({})}
+                >
+                  +
+                </Button>
+              </Styled.AddButtonWrapper>
+            )}
+
+            <Form.Group
+              className="mb-4"
+              controlId="exampleForm.ControlTextarea1"
+            >
+              <Form.Label>Duck Description</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                {...register("description", {
+                  required: true,
+                })}
+                isInvalid={!!errors.description}
+              />
+              {errors.description && (
+                <Form.Control.Feedback type="invalid">
+                  Required
+                </Form.Control.Feedback>
+              )}
+            </Form.Group>
+
+            <Styled.SubmitBtnWrapper>
+              <Button
+                variant="primary"
+                type="submit"
+                disabled={isSending}
+                style={{ marginLeft: 15 }}
+              >
+                Submit
+              </Button>
+            </Styled.SubmitBtnWrapper>
           </Form>
           {error && (
             <Styled.Error className="text-danger">{error}</Styled.Error>

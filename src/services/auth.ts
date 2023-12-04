@@ -34,6 +34,13 @@ class AuthService {
     localStorage.removeItem("accessToken");
     api.defaults.headers["Access-Token"] = `Bearer null`;
   }
+
+  async checkUsernameUniqueness(username: string) {
+    const res = await api.get(
+      `/auth/checkUsernameUniqueness?username=${username}`
+    );
+    return res.data;
+  }
 }
 
 const authService = new AuthService();
