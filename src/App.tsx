@@ -36,7 +36,7 @@ function App() {
       try {
         const accessToken = await authService.refreshAccessToken();
         const accessTokenPayload = jwtDecode<any>(accessToken);
-        const uid: string = accessTokenPayload.user.user.id;
+        const uid: string = accessTokenPayload.user.id;
         await getUser(uid);
       } catch (err) {}
     }
@@ -90,10 +90,10 @@ function App() {
       } catch (err) {}
     };
 
-    const id = setInterval(() => getNewMatches(), 15000);
+    // const id = setInterval(() => getNewMatches(), 15000);
 
     return () => {
-      clearInterval(id);
+      // clearInterval(id);
     };
   }, [isAuthed]);
 
