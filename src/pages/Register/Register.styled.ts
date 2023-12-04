@@ -32,7 +32,7 @@ export const AddButtonWrapper = styled.p`
   justify-content: center;
 `;
 
-export const SubmitBtnWrapper = styled.div`
+export const BottomButtons = styled.div`
   display: flex;
   justify-content: flex-end;
 `;

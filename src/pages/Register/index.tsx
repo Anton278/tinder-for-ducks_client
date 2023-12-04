@@ -197,7 +197,10 @@ function RegisterPage() {
               )}
             </Form.Group>
 
-            <Styled.SubmitBtnWrapper>
+            <Styled.BottomButtons>
+              <Button variant="secondary" type="reset">
+                Reset
+              </Button>
               <Button
                 variant="primary"
                 type="submit"
@@ -206,7 +209,7 @@ function RegisterPage() {
               >
                 Submit
               </Button>
-            </Styled.SubmitBtnWrapper>
+            </Styled.BottomButtons>
           </Form>
           {error && (
             <Styled.Error className="text-danger">{error}</Styled.Error>
