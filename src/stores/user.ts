@@ -10,7 +10,6 @@ interface State {
   isAuthed: boolean;
 
   logout: () => Promise<void>;
-  getUser: (id: string) => Promise<void>;
   setUser: (user: User) => void;
   updateUser: (user: User) => Promise<void>;
 }
@@ -37,12 +36,6 @@ export const useUser = create<State>()(
       try {
         await authService.logout();
         set({ isAuthed: false });
-      } catch (err) {}
-    },
-    getUser: async (id: string) => {
-      try {
-        const user = await usersService.getOne(id);
-        set({ user, isAuthed: true });
       } catch (err) {}
     },
     setUser: (user: User) => set({ user, isAuthed: true }),

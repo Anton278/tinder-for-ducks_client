@@ -23,7 +23,7 @@ import { useUser } from "./stores/user";
 function App() {
   const isAuthed = useUser((state) => state.isAuthed);
   const uid = useUser((state) => state.user.id);
-  const getUser = useUser((state) => state.getUser);
+  const setUser = useUser((state) => state.setUser);
   const updateUser = useUser((state) => state.updateUser);
 
   useEffect(() => {
@@ -36,9 +36,10 @@ function App() {
       try {
         const accessToken = await authService.refreshAccessToken();
         const accessTokenPayload = jwtDecode<any>(accessToken);
-        const uid: string = accessTokenPayload.user.id;
-        await getUser(uid);
-      } catch (err) {}
+        setUser(accessTokenPayload.user);
+      } catch (err) {
+        console.log(err);
+      }
     }
 
     init();
