@@ -17,5 +17,6 @@ export interface LoginResponse {
       new: Notification[];
       old: Notification[];
     };
+    chats: string[];
   };
 }

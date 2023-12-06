@@ -4,7 +4,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import HomePage from "./pages/Home";
 import RegisterPage from "./pages/Register";
@@ -21,10 +21,13 @@ import authService from "./services/auth";
 import { useUser } from "./stores/user";
 
 function App() {
-  const isAuthed = useUser((state) => state.isAuthed);
-  const uid = useUser((state) => state.user.id);
-  const setUser = useUser((state) => state.setUser);
-  const updateUser = useUser((state) => state.updateUser);
+  const {
+    isAuthed,
+    isLoading,
+    setUser,
+    user: { id, chats },
+  } = useUser();
+  const ws = useRef<WebSocket | undefined>();
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
@@ -46,57 +49,85 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!isAuthed) {
+    if (isLoading) {
       return;
     }
-    const getNewMatches = async () => {
-      try {
-        const users = await usersService.getAll();
-        const user = users.find((user) => user.id === uid);
-        if (!user) {
-          return console.error("Unexpected error: can not find user");
-        }
-        const matchs = users.filter((candidate) => {
-          if (candidate.id === uid) {
-            return false;
-          }
-          if (
-            candidate.liked.includes(uid) &&
-            user.liked.includes(candidate.id)
-          ) {
-            return true;
-          }
-          return false;
-        });
 
-        const newMatchs = matchs.filter(
-          (match) => !user.matchs.includes(match.id)
-        );
-
-        if (!newMatchs.length) {
-          return;
-        }
-        await updateUser({
-          ...user,
-          newMatchs: newMatchs.map((user) => user.id),
-          notifications: {
-            ...user.notifications,
-            new: [
-              newMatchs.length === 1
-                ? { type: "newMatch" }
-                : { type: "newMatchs", count: newMatchs.length },
-            ],
-          },
-        });
-      } catch (err) {}
+    ws.current = new WebSocket("ws://localhost:5001");
+    ws.current.onopen = (e) => {
+      console.log("ws open ", e);
+      // @ts-ignore
+      ws.current.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        console.log("received message ", data);
+      };
+    };
+    ws.current.onclose = (e) => {
+      console.log("ws closed ", e);
     };
 
-    // const id = setInterval(() => getNewMatches(), 15000);
+    const id = setInterval(() => {
+      ws.current?.send(JSON.stringify({ event: "heartbeat", message: "ping" }));
+    }, 25000);
 
     return () => {
-      // clearInterval(id);
+      clearInterval(id);
+      ws.current?.close();
     };
-  }, [isAuthed]);
+  }, [isLoading]);
+
+  // useEffect(() => {
+  //   if (!isAuthed) {
+  //     return;
+  //   }
+  //   const getNewMatches = async () => {
+  //     try {
+  //       const users = await usersService.getAll();
+  //       const user = users.find((user) => user.id === uid);
+  //       if (!user) {
+  //         return console.error("Unexpected error: can not find user");
+  //       }
+  //       const matchs = users.filter((candidate) => {
+  //         if (candidate.id === uid) {
+  //           return false;
+  //         }
+  //         if (
+  //           candidate.liked.includes(uid) &&
+  //           user.liked.includes(candidate.id)
+  //         ) {
+  //           return true;
+  //         }
+  //         return false;
+  //       });
+
+  //       const newMatchs = matchs.filter(
+  //         (match) => !user.matchs.includes(match.id)
+  //       );
+
+  //       if (!newMatchs.length) {
+  //         return;
+  //       }
+  //       await updateUser({
+  //         ...user,
+  //         newMatchs: newMatchs.map((user) => user.id),
+  //         notifications: {
+  //           ...user.notifications,
+  //           new: [
+  //             newMatchs.length === 1
+  //               ? { type: "newMatch" }
+  //               : { type: "newMatchs", count: newMatchs.length },
+  //           ],
+  //         },
+  //       });
+  //     } catch (err) {}
+  //   };
+
+  //   // const id = setInterval(() => getNewMatches(), 15000);
+
+  //   return () => {
+  //     // clearInterval(id);
+  //   };
+  // }, [isAuthed]);
 
   const protectedRoutes = [
     {

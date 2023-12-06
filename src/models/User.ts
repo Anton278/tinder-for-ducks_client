@@ -15,4 +15,5 @@ export interface User {
     old: Notification[];
     new: Notification[];
   };
+  chats: string[];
 }

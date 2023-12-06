@@ -18,5 +18,6 @@ export interface RegisterResponse {
       new: Notification[];
       old: Notification[];
     };
+    chats: string[];
   };
 }
