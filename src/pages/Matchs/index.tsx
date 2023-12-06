@@ -2,15 +2,16 @@ import { useEffect, useState } from "react";
 
 import Layout from "../../components/Layout";
 import { useUser } from "../../stores/user";
-import { User } from "../../models/User";
 import usersService from "../../services/users";
 import Card from "../../components/Card";
+import { GetUserResponse } from "models/responses/getUser";
 
 import * as Styled from "./Matchs.styled";
 
 function MatchsPage() {
-  const [data, setData] = useState<User[]>([]);
+  const [data, setData] = useState<GetUserResponse[]>([]);
   const user = useUser((state) => state.user);
+  const isLoadingUser = useUser((state) => state.isLoading);
   const matchs = useUser((state) => state.user.matchs);
   const newMatchs = useUser((state) => state.user.newMatchs);
   const updateUser = useUser((state) => state.updateUser);
@@ -18,19 +19,17 @@ function MatchsPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (isLoadingUser) {
+      return;
+    }
     const getMatchs = async () => {
       try {
         setError("");
         setIsLoading(true);
-        const users = await usersService.getAll();
-        const result: User[] = [];
-        [...newMatchs, ...matchs].forEach((match) => {
-          const user = users.find((user) => user.id === match);
-          if (user) {
-            result.push(user);
-          }
-        });
-        setData(result);
+        const res = await Promise.all(
+          [...newMatchs, ...matchs].map((match) => usersService.getOne(match))
+        );
+        setData(res);
       } catch (err) {
         setError("Failed to get matchs");
       } finally {
@@ -39,7 +38,7 @@ function MatchsPage() {
     };
 
     getMatchs();
-  }, []);
+  }, [isLoadingUser]);
 
   useEffect(() => {
     if (isLoading || error) {

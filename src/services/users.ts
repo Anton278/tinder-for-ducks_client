@@ -1,3 +1,4 @@
+import { GetUserResponse } from "models/responses/getUser";
 import { api } from "../http/api";
 import { User } from "../models/User";
 import { GetUsersResponse } from "../models/responses/getUsers";
@@ -8,7 +9,7 @@ class UsersService {
     return res.data;
   }
 
-  async getOne(id: string): Promise<User> {
+  async getOne(id: string): Promise<GetUserResponse> {
     const res = await api.get(`/users/${id}`);
     return res.data;
   }

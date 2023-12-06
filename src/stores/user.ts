@@ -8,6 +8,7 @@ import usersService from "../services/users";
 interface State {
   user: User;
   isAuthed: boolean;
+  isLoading: boolean;
 
   logout: () => Promise<void>;
   setUser: (user: User) => void;
@@ -31,6 +32,7 @@ export const useUser = create<State>()(
       chats: [],
     },
     isAuthed: !!localStorage.getItem("accessToken"),
+    isLoading: true,
 
     logout: async () => {
       try {
@@ -38,7 +40,7 @@ export const useUser = create<State>()(
         set({ isAuthed: false });
       } catch (err) {}
     },
-    setUser: (user: User) => set({ user, isAuthed: true }),
+    setUser: (user: User) => set({ user, isAuthed: true, isLoading: false }),
     updateUser: async (newUser) => {
       try {
         const updatedUser = await usersService.update(newUser);
