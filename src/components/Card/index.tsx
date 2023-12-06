@@ -84,9 +84,7 @@ function Card({
     try {
       setIsSending(true);
       const chats = await chatsService.getAll();
-      const chat = chats.find(
-        (chat) => chat.users.includes(id) && chat.users.includes(user.id)
-      );
+      const chat = chats.find((chat) => chat.users.includes(id));
       if (chat) {
         navigate(`/chats/${chat.id}`);
       } else {
