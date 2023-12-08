@@ -19,6 +19,7 @@ import SettingsPage from "./pages/Settings";
 
 import authService from "./services/auth";
 import { useUser } from "./stores/user";
+import useWebsocket from "hooks/useWebsocket";
 
 function App() {
   const {
@@ -48,33 +49,7 @@ function App() {
     init();
   }, []);
 
-  useEffect(() => {
-    if (isLoading) {
-      return;
-    }
-
-    ws.current = new WebSocket("ws://localhost:5001");
-    ws.current.onopen = (e) => {
-      console.log("ws open ", e);
-      // @ts-ignore
-      ws.current.onmessage = (e) => {
-        const data = JSON.parse(e.data);
-        console.log("received message ", data);
-      };
-    };
-    ws.current.onclose = (e) => {
-      console.log("ws closed ", e);
-    };
-
-    const id = setInterval(() => {
-      ws.current?.send(JSON.stringify({ event: "heartbeat", message: "ping" }));
-    }, 25000);
-
-    return () => {
-      clearInterval(id);
-      ws.current?.close();
-    };
-  }, [isLoading]);
+  useWebsocket();
 
   // useEffect(() => {
   //   if (!isAuthed) {
