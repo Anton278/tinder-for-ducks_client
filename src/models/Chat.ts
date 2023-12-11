@@ -1,6 +1,7 @@
 export interface Message {
   authorId: string;
   message: string;
+  id: string;
 }
 
 export interface Chat {

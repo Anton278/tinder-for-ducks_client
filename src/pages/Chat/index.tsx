@@ -86,7 +86,10 @@ function ChatPage() {
         </Styled.Top>
         <Styled.Center>
           {messages.map((message) => (
-            <Styled.Message $isOnRight={message.authorId === uid}>
+            <Styled.Message
+              $isOnRight={message.authorId === uid}
+              key={message.id}
+            >
               {message.message}
             </Styled.Message>
           ))}
