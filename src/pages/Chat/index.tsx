@@ -18,6 +18,7 @@ import { ws } from "App";
 
 import { getMessages } from "utils/wsActions";
 import { useChats } from "stores/chats";
+import { sendMessage as sendMessageWsUtil } from "utils/wsActions";
 
 type Data = {
   totalPages: number;
@@ -26,15 +27,19 @@ type Data = {
 
 function ChatPage() {
   const navigate = useNavigate();
+  const { id } = useParams();
+
   const uid = useUser((state) => state.user.id);
-  const { id: chatId } = useParams();
   const areChatsObserved = useChats((state) => state.areObserved);
 
+  const chats = useChats((state) => state.chats);
+  const chat = id ? chats[id] : null;
+
   useEffect(() => {
-    if (!chatId) {
+    if (!id) {
       return;
     }
-    getMessages(chatId);
+    getMessages(id);
   }, [ws.readyState, areChatsObserved]);
 
   const [data, setData] = useState<Data>({
@@ -43,6 +48,16 @@ function ChatPage() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [value, setValue] = useState("");
+
+  const sendMessage = () => {
+    if (!id) {
+      return;
+    }
+    sendMessageWsUtil(id, value);
+    setValue("");
+  };
 
   return (
     <Layout>
@@ -80,8 +95,14 @@ function ChatPage() {
           </Styled.Message>
         </Styled.Center>
         <Styled.Bottom>
-          <Form.Control as="textarea" />
-          <Button variant="primary">Send</Button>
+          <Form.Control
+            as="textarea"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+          />
+          <Button variant="primary" onClick={sendMessage}>
+            Send
+          </Button>
         </Styled.Bottom>
       </Styled.Wrapper>
     </Layout>

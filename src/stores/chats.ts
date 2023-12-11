@@ -56,3 +56,5 @@ export const useChats = create<State>()(
     { store: "chats-store", name: "chats-store" }
   )
 );
+
+// export const selectChat
