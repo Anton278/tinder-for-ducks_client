@@ -2,10 +2,10 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
 import usersService from "../services/users";
-import { User } from "../models/User";
+import { GetUsersResponse } from "models/responses/getUsers";
 
 type State = {
-  users: User[];
+  users: GetUsersResponse;
   isLoading: boolean;
   error: string;
   getUsers: () => Promise<void>;

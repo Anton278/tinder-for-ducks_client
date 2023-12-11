@@ -23,7 +23,7 @@ function LikedPage() {
       user.liked.forEach((liked) => {
         const likedUser = users.find((user) => user.id === liked);
         if (likedUser) {
-          res.push(likedUser);
+          // res.push(likedUser);
         }
       });
       setLiked(res);

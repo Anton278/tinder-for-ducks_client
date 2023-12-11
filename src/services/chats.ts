@@ -1,3 +1,4 @@
+import { GetChatsRes } from "models/responses/getChats";
 import { api } from "../http/api";
 import { Chat } from "../models/Chat";
 
@@ -7,7 +8,7 @@ class ChatsService {
     return createdChat.data;
   }
 
-  async getAll(): Promise<Chat[]> {
+  async getAll(): Promise<GetChatsRes> {
     const res = await api.get("/chats");
     return res.data;
   }

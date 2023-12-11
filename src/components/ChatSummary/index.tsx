@@ -1,22 +1,33 @@
 import Avatar from "../Avatar";
-import { User } from "../../models/User";
+import { GetUserResponse } from "models/responses/getUser";
 
 import * as Styled from "./ChatSummary.styled";
+import { Message } from "models/Chat";
 
 type ChatSummaryProps = {
-  interlocutor: User | undefined;
+  interlocutor: GetUserResponse | undefined;
+  lastMessage: Message;
+  unreadMessagesCount: number;
 };
 
-function ChatSummary({ interlocutor }: ChatSummaryProps) {
+function ChatSummary({
+  interlocutor,
+  lastMessage,
+  unreadMessagesCount,
+}: ChatSummaryProps) {
   return (
     <Styled.ChatSummary to="/chats/1">
       <Avatar src={interlocutor?.duck.images[0]} />
       <div>
         <p>
-          <b>{interlocutor?.username}</b>
+          <b>username</b>
         </p>
         <p>
-          <b>2 unread messages</b>
+          {unreadMessagesCount ? (
+            <b>{unreadMessagesCount} unread messages</b>
+          ) : (
+            lastMessage.message
+          )}
         </p>
       </div>
     </Styled.ChatSummary>

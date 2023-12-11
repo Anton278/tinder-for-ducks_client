@@ -1,3 +1,7 @@
-import { User } from "../User";
-
-export type GetUsersResponse = User[];
+export type GetUsersResponse = {
+  duck: {
+    images: string[];
+    description: string;
+  };
+  id: string;
+}[];

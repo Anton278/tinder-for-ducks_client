@@ -4,20 +4,27 @@ import ChatSummary from "../../components/ChatSummary";
 import Layout from "../../components/Layout";
 import { useUser } from "../../stores/user";
 import chatsService from "../../services/chats";
-import { User } from "../../models/User";
-import { Chat } from "../../models/Chat";
 import usersService from "../../services/users";
+import { GetChatsRes } from "models/responses/getChats";
+import { GetUsersResponse } from "models/responses/getUsers";
 
 import * as Styled from "./Chats.styled";
 
 function ChatsPage() {
-  const userId = useUser((state) => state.user.id);
-  const [chats, setChats] = useState<Chat[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
+  const {
+    isLoading: isLoadingUser,
+    user: { id: uid },
+  } = useUser();
+  const [chats, setChats] = useState<GetChatsRes>([]);
+  const [users, setUsers] = useState<GetUsersResponse>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (isLoadingUser) {
+      return;
+    }
+
     const getData = async () => {
       try {
         setError("");
@@ -25,8 +32,7 @@ function ChatsPage() {
           chatsService.getAll(),
           usersService.getAll(),
         ]);
-        const userChats = res[0].filter((chat) => chat.users.includes(userId));
-        setChats(userChats);
+        setChats(res[0]);
         setUsers(res[1]);
       } catch (err) {
         setError("Failed to get chats");
@@ -36,7 +42,7 @@ function ChatsPage() {
     };
 
     getData();
-  }, []);
+  }, [isLoadingUser]);
 
   return (
     <Layout>
@@ -49,11 +55,18 @@ function ChatsPage() {
         ) : (
           chats.map((chat) => {
             const interlocutorId =
-              chat.users[0] === userId ? chat.users[1] : chat.users[0];
+              chat.users[0] === uid ? chat.users[1] : chat.users[0];
             const interlocutor = users.find(
               (user) => user.id === interlocutorId
             );
-            return <ChatSummary key={chat.id} interlocutor={interlocutor} />;
+            return (
+              <ChatSummary
+                key={chat.id}
+                interlocutor={interlocutor}
+                lastMessage={chat.lastMessage}
+                unreadMessagesCount={chat.unreadMessagesCount}
+              />
+            );
           })
         )}
       </Styled.Chats>

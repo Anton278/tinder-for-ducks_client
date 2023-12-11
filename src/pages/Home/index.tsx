@@ -3,13 +3,13 @@ import { useEffect, useState } from "react";
 import Layout from "../../components/Layout";
 import Card from "../../components/Card";
 import { useUsers } from "../../stores/users";
-import { User } from "../../models/User";
 import { useUser } from "../../stores/user";
+import { GetUsersResponse } from "models/responses/getUsers";
 
 import * as Styled from "./Home.styled";
 
 function HomePage() {
-  const [relevantUsers, setRelevantUsers] = useState<User[]>([]);
+  const [relevantUsers, setRelevantUsers] = useState<GetUsersResponse>([]);
   const { liked, disliked } = useUser((state) => state.user);
   const users = useUsers((state) => state.users);
   const isLoading = useUsers((state) => state.isLoading);
