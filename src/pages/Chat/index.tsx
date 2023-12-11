@@ -14,6 +14,10 @@ import { useUser } from "stores/user";
 import { Message } from "models/Chat";
 
 import * as Styled from "./Chat.styled";
+import { ws } from "App";
+
+import { getMessages } from "utils/wsActions";
+import { useChats } from "stores/chats";
 
 type Data = {
   totalPages: number;
@@ -21,10 +25,17 @@ type Data = {
 };
 
 function ChatPage() {
-  const ws = useRef<WebSocket | undefined>();
   const navigate = useNavigate();
   const uid = useUser((state) => state.user.id);
   const { id: chatId } = useParams();
+  const areChatsObserved = useChats((state) => state.areObserved);
+
+  useEffect(() => {
+    if (!chatId) {
+      return;
+    }
+    getMessages(chatId);
+  }, [ws.readyState, areChatsObserved]);
 
   const [data, setData] = useState<Data>({
     messages: [],
@@ -32,51 +43,6 @@ function ChatPage() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-
-  console.log("data ", data);
-
-  useEffect(() => {
-    if (!uid) {
-      return;
-    }
-
-    ws.current = new WebSocket("ws://localhost:5001");
-    ws.current.onopen = (e) => {
-      console.log("ws open ", e);
-      // @ts-ignore
-      ws.current.onmessage = (e) => {
-        const data = JSON.parse(e.data);
-        console.log("received message ", data);
-
-        if (data.event === "get-messages") {
-          setData((oldData) => ({
-            totalPages: data.totalPages,
-            messages: [...oldData.messages, ...data.messages],
-          }));
-        }
-      };
-      // @ts-ignore
-      ws.current.send(
-        JSON.stringify({
-          event: "get-messages",
-          uid,
-          chatId,
-        })
-      );
-    };
-    ws.current.onclose = (e) => {
-      console.log("ws closed ", e);
-    };
-
-    const id = setInterval(() => {
-      ws.current?.send(JSON.stringify({ event: "heartbeat", message: "ping" }));
-    }, 25000);
-
-    return () => {
-      clearInterval(id);
-      ws.current?.close();
-    };
-  }, [uid]);
 
   return (
     <Layout>

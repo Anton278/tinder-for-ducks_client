@@ -16,36 +16,39 @@ interface State {
 }
 
 export const useUser = create<State>()(
-  devtools((set, get) => ({
-    user: {
-      username: "",
-      duck: {
-        description: "",
-        images: [],
+  devtools(
+    (set, get) => ({
+      user: {
+        username: "",
+        duck: {
+          description: "",
+          images: [],
+        },
+        id: "",
+        liked: [],
+        disliked: [],
+        matchs: [],
+        newMatchs: [],
+        notifications: { old: [], new: [] },
+        chats: [],
       },
-      id: "",
-      liked: [],
-      disliked: [],
-      matchs: [],
-      newMatchs: [],
-      notifications: { old: [], new: [] },
-      chats: [],
-    },
-    isAuthed: !!localStorage.getItem("accessToken"),
-    isLoading: true,
+      isAuthed: !!localStorage.getItem("accessToken"),
+      isLoading: true,
 
-    logout: async () => {
-      try {
-        await authService.logout();
-        set({ isAuthed: false });
-      } catch (err) {}
-    },
-    setUser: (user: User) => set({ user, isAuthed: true, isLoading: false }),
-    updateUser: async (newUser) => {
-      try {
-        const updatedUser = await usersService.update(newUser);
-        set({ user: updatedUser });
-      } catch (err) {}
-    },
-  }))
+      logout: async () => {
+        try {
+          await authService.logout();
+          set({ isAuthed: false });
+        } catch (err) {}
+      },
+      setUser: (user: User) => set({ user, isAuthed: true, isLoading: false }),
+      updateUser: async (newUser) => {
+        try {
+          const updatedUser = await usersService.update(newUser);
+          set({ user: updatedUser });
+        } catch (err) {}
+      },
+    }),
+    { store: "user-store" }
+  )
 );

@@ -19,7 +19,12 @@ import SettingsPage from "./pages/Settings";
 
 import authService from "./services/auth";
 import { useUser } from "./stores/user";
-import useWebsocket from "hooks/useWebsocket";
+import useWsConfig from "hooks/useWebsocket";
+
+export const ws = new WebSocket(
+  "ws://localhost:5000",
+  `${localStorage.getItem("accessToken")}`
+);
 
 function App() {
   const {
@@ -28,7 +33,6 @@ function App() {
     setUser,
     user: { id, chats },
   } = useUser();
-  const ws = useRef<WebSocket | undefined>();
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
@@ -49,7 +53,7 @@ function App() {
     init();
   }, []);
 
-  useWebsocket();
+  useWsConfig();
 
   // useEffect(() => {
   //   if (!isAuthed) {

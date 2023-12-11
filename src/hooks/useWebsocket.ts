@@ -1,56 +1,63 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
+import { ws } from "App";
 import { useUser } from "stores/user";
+import { useChats } from "stores/chats";
+import { WsMessage } from "models/responses/wsMessage";
 
-const useWebsocket = () => {
+const useWsConfig = () => {
   const {
     isLoading,
     user: { chats },
   } = useUser();
-  const ws = useRef<WebSocket | undefined>();
+  const setAreChatsObserved = useChats((state) => state.setAreObserved);
+  const setChat = useChats((state) => state.setChat);
 
   useEffect(() => {
     if (isLoading) {
       return;
     }
 
-    ws.current = new WebSocket(
-      "ws://localhost:5000",
-      `${localStorage.getItem("accessToken")}`
-    );
-    ws.current.onopen = (e) => {
-      console.log("ws open ", e);
-      if (!ws.current) {
-        return;
-      }
-
-      ws.current.send(
-        JSON.stringify({
-          event: "subscribe",
-          chatIds: chats,
-        })
-      );
-
-      // @ts-ignore
-      ws.current.onmessage = (e) => {
-        const data = JSON.parse(e.data);
-        console.log("received message ", data);
-      };
-    };
-
-    ws.current.onclose = (e) => {
+    ws.onclose = (e) => {
       console.log("ws closed ", e);
     };
 
+    if (ws.readyState !== ws.OPEN) {
+      return;
+    }
+
+    ws.send(
+      JSON.stringify({
+        event: "subscribe",
+        chatIds: chats,
+      })
+    );
+
+    ws.onmessage = (e) => {
+      const data = JSON.parse(e.data) as WsMessage;
+      console.log("received message ", data);
+
+      if (data.event === "subscribe") {
+        setAreChatsObserved(true);
+        return;
+      }
+      if (data.event === "get-chat") {
+        // @ts-ignore
+        delete data.event;
+        setChat(data);
+        return;
+      }
+    };
+
     const id = setInterval(() => {
-      ws.current?.send(JSON.stringify({ event: "heartbeat", message: "ping" }));
+      ws.send(JSON.stringify({ event: "heartbeat", message: "ping" }));
     }, 25000);
 
     return () => {
       clearInterval(id);
-      ws.current?.close();
+      ws.close();
     };
-  }, [isLoading]);
+  }, [isLoading, ws.readyState]);
 };
 
-export default useWebsocket;
+export default useWsConfig;
