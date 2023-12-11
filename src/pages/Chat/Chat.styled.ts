@@ -38,17 +38,21 @@ export const Center = styled.section`
   // 100vh - (header height + content wrapper margin) - (chat top + chat body margin + chat bottom)
   max-height: calc(100vh - 96px - 161px);
   overflow-y: auto;
-
-  & > div:nth-of-type(even) {
-    margin-left: auto;
-  }
 `;
 
-export const Message = styled.div`
+export const Message = styled.div<{ $isOnRight: boolean }>`
   width: fit-content;
   margin-bottom: 10px;
   padding: 5px 10px;
   border-radius: 10px;
+  background: var(--bs-success-bg-subtle);
+
+  ${({ $isOnRight }) =>
+    $isOnRight &&
+    `
+  margin-left: auto;
+  background: var(--bs-warning-bg-subtle);
+  `}
 `;
 
 export const Bottom = styled.section`

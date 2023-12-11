@@ -3,22 +3,21 @@ import Dropdown from "react-bootstrap/Dropdown";
 import { useNavigate, useParams } from "react-router-dom";
 import Stack from "react-bootstrap/Stack";
 import Form from "react-bootstrap/Form";
-import { useRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import Avatar from "../../components/Avatar";
 import ThreeDotsVert from "../../components/Icons/ThreeDotsVert";
 import Layout from "../../components/Layout";
 import ArrowLeft from "../../components/Icons/ArrowLeft";
 import Ban from "../../components/Icons/Ban";
-import { useUser } from "stores/user";
 import { Message } from "models/Chat";
-
-import * as Styled from "./Chat.styled";
 import { ws } from "App";
-
 import { getMessages } from "utils/wsActions";
 import { useChats } from "stores/chats";
 import { sendMessage as sendMessageWsUtil } from "utils/wsActions";
+
+import * as Styled from "./Chat.styled";
+import { useUser } from "stores/user";
 
 type Data = {
   totalPages: number;
@@ -31,9 +30,10 @@ function ChatPage() {
 
   const uid = useUser((state) => state.user.id);
   const areChatsObserved = useChats((state) => state.areObserved);
-
   const chats = useChats((state) => state.chats);
   const chat = id ? chats[id] : null;
+
+  const [value, setValue] = useState("");
 
   useEffect(() => {
     if (!id) {
@@ -42,15 +42,6 @@ function ChatPage() {
     getMessages(id);
   }, [ws.readyState, areChatsObserved]);
 
-  const [data, setData] = useState<Data>({
-    messages: [],
-    totalPages: 1,
-  });
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  const [value, setValue] = useState("");
-
   const sendMessage = () => {
     if (!id) {
       return;
@@ -58,6 +49,11 @@ function ChatPage() {
     sendMessageWsUtil(id, value);
     setValue("");
   };
+
+  if (!chat) {
+    navigate("/");
+    return null;
+  }
 
   return (
     <Layout>
@@ -87,12 +83,11 @@ function ChatPage() {
           </Dropdown>
         </Styled.Top>
         <Styled.Center>
-          <Styled.Message className="bg-success-subtle">
-            Message 1
-          </Styled.Message>
-          <Styled.Message className="bg-warning-subtle">
-            Message 2
-          </Styled.Message>
+          {chat.chat.messages.map((message) => (
+            <Styled.Message $isOnRight={message.authorId === uid}>
+              {message.message}
+            </Styled.Message>
+          ))}
         </Styled.Center>
         <Styled.Bottom>
           <Form.Control
