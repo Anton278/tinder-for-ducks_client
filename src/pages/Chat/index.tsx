@@ -55,6 +55,8 @@ function ChatPage() {
     return null;
   }
 
+  const messages = chat.chat.messages.slice().reverse();
+
   return (
     <Layout>
       <Styled.Wrapper>
@@ -83,7 +85,7 @@ function ChatPage() {
           </Dropdown>
         </Styled.Top>
         <Styled.Center>
-          {chat.chat.messages.map((message) => (
+          {messages.map((message) => (
             <Styled.Message $isOnRight={message.authorId === uid}>
               {message.message}
             </Styled.Message>
