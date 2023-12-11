@@ -1,6 +1,5 @@
 import { ws } from "App";
 import { useChats } from "stores/chats";
-import { useUser } from "stores/user";
 
 type Pagination = {
   mesagesPerPage?: number;
@@ -35,10 +34,7 @@ export const sendMessage = (chatId: string, message: string) => {
   ws.send(
     JSON.stringify({
       event: "send-message",
-      message: {
-        authorId: useUser.getState().user.id,
-        message,
-      },
+      message,
       chatId,
     })
   );

@@ -12,6 +12,7 @@ const useWsConfig = () => {
   } = useUser();
   const setAreChatsObserved = useChats((state) => state.setAreObserved);
   const setChat = useChats((state) => state.setChat);
+  const addMessage = useChats((state) => state.addMessage);
 
   useEffect(() => {
     if (isLoading) {
@@ -46,6 +47,9 @@ const useWsConfig = () => {
         delete data.event;
         setChat(data);
         return;
+      }
+      if (data.event === "sent-message") {
+        addMessage(data);
       }
     };
 

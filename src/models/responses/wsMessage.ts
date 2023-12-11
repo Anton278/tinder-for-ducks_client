@@ -1,4 +1,4 @@
-import { Chat } from "models/Chat";
+import { Chat, Message } from "models/Chat";
 
 type SubscribeRes = {
   event: "subscribe";
@@ -13,4 +13,10 @@ type GetChatRes = {
   chat: Chat;
 };
 
-export type WsMessage = GetChatRes | SubscribeRes;
+export type SentMessage = {
+  event: "sent-message";
+  message: Message;
+  chatId: string;
+};
+
+export type WsMessage = GetChatRes | SubscribeRes | SentMessage;

@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
 import { Chat } from "models/Chat";
+import { SentMessage } from "models/responses/wsMessage";
 
 type State = {
   areObserved: boolean;
@@ -14,6 +15,7 @@ type State = {
     };
   };
   setChat: (data: { chat: Chat; page: number; totalPages: number }) => void;
+  addMessage: (sentMessage: SentMessage) => void;
 };
 
 export const useChats = create<State>()(
@@ -47,6 +49,22 @@ export const useChats = create<State>()(
               chat: {
                 ...data.chat,
                 messages: [...oldMessages, ...data.chat.messages],
+              },
+            },
+          },
+        });
+      },
+      addMessage: (sentMessage) => {
+        const oldChats = get().chats;
+        const oldChat = oldChats[sentMessage.chatId];
+        set({
+          chats: {
+            ...oldChats,
+            [sentMessage.chatId]: {
+              ...oldChat,
+              chat: {
+                ...oldChat.chat,
+                messages: [sentMessage.message, ...oldChat.chat.messages],
               },
             },
           },
