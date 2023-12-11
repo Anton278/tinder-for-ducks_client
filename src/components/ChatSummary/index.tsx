@@ -8,15 +8,17 @@ type ChatSummaryProps = {
   interlocutor: GetUserResponse | undefined;
   lastMessage: Message;
   unreadMessagesCount: number;
+  id: string;
 };
 
 function ChatSummary({
   interlocutor,
   lastMessage,
   unreadMessagesCount,
+  id,
 }: ChatSummaryProps) {
   return (
-    <Styled.ChatSummary to="/chats/1">
+    <Styled.ChatSummary to={`/chats/${id}`}>
       <Avatar src={interlocutor?.duck.images[0]} />
       <div>
         <p>

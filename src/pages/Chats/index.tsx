@@ -65,6 +65,7 @@ function ChatsPage() {
                 interlocutor={interlocutor}
                 lastMessage={chat.lastMessage}
                 unreadMessagesCount={chat.unreadMessagesCount}
+                id={chat.id}
               />
             );
           })
