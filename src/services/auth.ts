@@ -41,6 +41,14 @@ class AuthService {
     );
     return res.data;
   }
+
+  async changePassword(oldPassword: string, newPassword: string) {
+    const res = await api.post("/auth/changePassword", {
+      oldPassword,
+      newPassword,
+    });
+    return res.data;
+  }
 }
 
 const authService = new AuthService();

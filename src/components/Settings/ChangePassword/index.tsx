@@ -1,10 +1,14 @@
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import { useState } from "react";
+import { AxiosError } from "axios";
 
 import SectionTitle from "../SectionTitle";
 import Input from "../../Input";
 import { passwordRegex } from "const";
+import authService from "services/auth";
 
 import * as Styled from "./ChangePasswordSettings.styled";
 
@@ -20,9 +24,30 @@ function ChangePassword() {
     handleSubmit,
     watch,
     formState: { errors },
+    reset,
   } = useForm<Inputs>();
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const onSubmit: SubmitHandler<Inputs> = async (values) => {
+    try {
+      setError("");
+      setIsLoading(true);
+      await authService.changePassword(values.oldPassword, values.newPassword);
+      toast.success("Successfully changed password!");
+      reset();
+    } catch (err) {
+      const error = err as AxiosError;
+      setError(
+        error.response?.status === 400
+          ? "Wrong password"
+          : "Failed to change password"
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <section style={{ marginTop: 20 }}>
@@ -96,10 +121,15 @@ function ChangePassword() {
           )}
         </Form.Group>
         <Styled.SubmitBtnWrapper>
-          <Button variant="primary" type="submit">
+          <Button variant="primary" type="submit" disabled={isLoading}>
             Reset password
           </Button>
         </Styled.SubmitBtnWrapper>
+        {error && (
+          <Styled.ErrorMessage className="text-danger">
+            {error}
+          </Styled.ErrorMessage>
+        )}
       </Form>
     </section>
   );
