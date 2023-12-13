@@ -5,11 +5,12 @@ import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 
 import SectionTitle from "../SectionTitle";
 import { useUser } from "stores/user";
+import fileService from "services/file";
 
 import * as Styled from "./ProfileInfoSettings.styled";
 
 type Inputs = {
-  images: { image: string }[];
+  images: { value: string | FileList }[];
   description: string;
 };
 
@@ -27,8 +28,31 @@ function ProfileInfoSettings() {
   const [imagesCopy, setImagesCopy] = useState<string[]>([]);
   const user = useUser((state) => state.user);
   const isLoadingUser = useUser((state) => state.isLoading);
+  const updateUser = useUser((state) => state.updateUser);
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<Inputs> = async ({ description, images }) => {
+    try {
+      // @ts-ignore
+      const notEmptyImages: { value: FileList }[] = images.filter(
+        ({ value }) => value.length
+      );
+      const savedImages = await Promise.all(
+        notEmptyImages.map(({ value }) => fileService.save(value[0]))
+      );
+      await updateUser({
+        ...user,
+        duck: {
+          description,
+          images: [
+            ...imagesCopy,
+            ...savedImages.map((savedImage) => savedImage.name),
+          ],
+        },
+      });
+    } catch (err) {
+    } finally {
+    }
+  };
 
   const removeImage = (index: number) => {
     setImagesCopy(imagesCopy.filter((_, imgIndex) => imgIndex !== index));
@@ -45,7 +69,7 @@ function ProfileInfoSettings() {
   useEffect(() => {
     remove();
     Array.from(Array(5 - imagesCopy.length)).forEach(() =>
-      append({ image: "" })
+      append({ value: "" })
     );
   }, [imagesCopy.length]);
 
@@ -72,7 +96,7 @@ function ProfileInfoSettings() {
               <input
                 type="file"
                 accept="image/*"
-                {...register(`images.${index}.image` as const, {
+                {...register(`images.${index}.value` as const, {
                   required: index === 0 && !imagesCopy.length,
                 })}
               />
