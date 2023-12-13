@@ -52,4 +52,11 @@ export const RemoveButton = styled.button`
   &:hover {
     background: #bb2d3b;
   }
+
+  @media (min-width: 0px) {
+    right: -8px;
+  }
+  @media (min-width: 576px) {
+    right: -16px;
+  }
 `;
