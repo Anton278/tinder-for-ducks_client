@@ -32,7 +32,7 @@ function HomePage() {
   }, [users]);
 
   return (
-    <Layout>
+    <Layout contentWrapperStyles={{ overflowX: "hidden" }}>
       {error ? (
         <p className="text-danger">{error}</p>
       ) : isLoading ? (

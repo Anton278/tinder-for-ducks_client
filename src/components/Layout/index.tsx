@@ -6,9 +6,10 @@ import * as Styled from "./Layout.styled";
 
 type LayoutProps = {
   children?: React.ReactNode;
+  contentWrapperStyles?: React.CSSProperties;
 };
 
-function Layout({ children }: LayoutProps) {
+function Layout({ children, contentWrapperStyles }: LayoutProps) {
   const isAuthed = useUser((state) => state.isAuthed);
 
   return (
@@ -16,7 +17,9 @@ function Layout({ children }: LayoutProps) {
       <Header />
       <Styled.Container as="main" className="container">
         {isAuthed && <Aside />}
-        <Styled.ContentWrapper>{children}</Styled.ContentWrapper>
+        <Styled.ContentWrapper style={contentWrapperStyles}>
+          {children}
+        </Styled.ContentWrapper>
       </Styled.Container>
     </>
   );
