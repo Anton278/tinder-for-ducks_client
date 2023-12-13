@@ -88,13 +88,11 @@ function RegisterPage() {
                 })}
                 isInvalid={!!errors.email}
               />
-              {errors.email && (
-                <Form.Control.Feedback type="invalid">
-                  {errors.email.type === "required"
-                    ? "Required"
-                    : "Invalid email"}
-                </Form.Control.Feedback>
-              )}
+              <Form.Control.Feedback type="invalid">
+                {errors.email?.type === "required"
+                  ? "Required"
+                  : "Invalid email"}
+              </Form.Control.Feedback>
             </Form.Group>
 
             <UsernameInput
@@ -134,13 +132,11 @@ function RegisterPage() {
                 })}
                 isInvalid={!!errors.repeatPassword}
               />
-              {errors.repeatPassword && (
-                <Form.Control.Feedback type="invalid">
-                  {errors.repeatPassword.type === "required"
-                    ? "Required"
-                    : "Password doesn't match"}
-                </Form.Control.Feedback>
-              )}
+              <Form.Control.Feedback type="invalid">
+                {errors.repeatPassword?.type === "required"
+                  ? "Required"
+                  : "Password doesn't match"}
+              </Form.Control.Feedback>
             </Form.Group>
             <p>Duck images</p>
             <Styled.ImagesList>
@@ -190,11 +186,9 @@ function RegisterPage() {
                 })}
                 isInvalid={!!errors.description}
               />
-              {errors.description && (
-                <Form.Control.Feedback type="invalid">
-                  Required
-                </Form.Control.Feedback>
-              )}
+              <Form.Control.Feedback type="invalid">
+                Required
+              </Form.Control.Feedback>
             </Form.Group>
 
             <Styled.BottomButtons>
