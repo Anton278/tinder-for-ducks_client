@@ -8,7 +8,6 @@ import Layout from "../../components/Layout";
 import authService from "../../services/auth";
 import { useUser } from "../../stores/user";
 import Input from "components/Input";
-import { api } from "../../http/api";
 import { emailRegex, passwordRegex } from "const";
 import UsernameInput from "components/business/UsernameInput";
 
@@ -54,9 +53,8 @@ function RegisterPage() {
     try {
       setError("");
       setIsSending(true);
+
       const res = await authService.register({ ...data, ...images });
-      localStorage.setItem("accessToken", res.accessToken);
-      api.defaults.headers["Access-Token"] = `Bearer ${res.accessToken}`;
       setUser(res.user);
       reset();
     } catch (err: any) {

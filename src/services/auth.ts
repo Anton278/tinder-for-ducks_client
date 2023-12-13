@@ -11,6 +11,10 @@ class AuthService {
         "Content-Type": "multipart/form-data",
       },
     });
+
+    localStorage.setItem("accessToken", res.data.accessToken);
+    api.defaults.headers["Access-Token"] = `Bearer ${res.data.accessToken}`;
+
     return res.data;
   }
 
