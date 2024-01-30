@@ -178,12 +178,15 @@ function Card({
           const left = e.pageX - shiftX - parentRect.left;
           const distance = initX - left;
 
+          // dislike
           if (distance >= 20) {
             setStyles((oldStyles) => ({
               ...oldStyles,
               left: -90 - rect.width + "px",
               transition: "transform, left 0.15s ease-out",
             }));
+
+            dislike();
           }
           if (distance < 20 && distance > -20) {
             setStyles((oldStyles) => ({
@@ -192,12 +195,15 @@ function Card({
               left: initX + "px",
             }));
           }
+          // like
           if (distance <= -20) {
             setStyles((oldStyles) => ({
               ...oldStyles,
               left: "calc(100vw + 90px)",
               transition: "transform, left 0.15s ease-out",
             }));
+
+            like();
           }
 
           document.removeEventListener("mousemove", onMouseMove);
