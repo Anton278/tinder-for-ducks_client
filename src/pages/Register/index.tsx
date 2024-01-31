@@ -77,10 +77,7 @@ function RegisterPage() {
   return (
     <Layout>
       <Styled.Wrapper>
-        <Styled.Form
-          onSubmit={handleSubmit(onSubmit)}
-          style={{ width: "100%" }}
-        >
+        <Styled.Form onSubmit={handleSubmit(onSubmit)}>
           <Styled.Title>Registration</Styled.Title>
           <Styled.UserInfoSection>
             <Styled.SectionTitle>Your info</Styled.SectionTitle>

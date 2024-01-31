@@ -66,6 +66,7 @@ export const BottomButtons = styled.div`
 
 export const Form = styled(BootstrapForm)({
   maxWidth: 720,
+  width: "100%",
 });
 
 export const Images = styled.div({
@@ -79,9 +80,13 @@ export const UserInfoSection = styled.section({
 
 export const UserInfoSectionInner = styled.div({
   display: "grid",
-  gridTemplateColumns: "1fr 1fr",
+  gridTemplateColumns: "1fr",
   columnGap: 20,
   rowGap: 25,
+
+  "@media (min-width: 768px)": {
+    gridTemplateColumns: "1fr 1fr",
+  },
 });
 
 export const SectionTitle = styled.h3({
@@ -159,4 +164,9 @@ export const UploadImagesWrapper = styled.div({
   columnGap: 25,
   rowGap: 20,
   marginBottom: 25,
+  justifyContent: "center",
+
+  "@media (min-width: 576px)": {
+    justifyContent: "flex-start",
+  },
 });
