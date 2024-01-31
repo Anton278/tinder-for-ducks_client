@@ -44,7 +44,6 @@ function RegisterPage() {
   });
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
-  const [addedImagesError, setAddedImagesError] = useState(false);
 
   const onSubmit: SubmitHandler<RegisterInputs> = async (data) => {
     const images = data.images.reduce((acc, image, index) => {

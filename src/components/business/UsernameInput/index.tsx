@@ -54,9 +54,12 @@ function UsernameInput({ watch, register, error }: UsernameInputProps) {
           placeholder="john001"
           {...register("username", {
             required: true,
+            // without special chars
+            pattern: /^[a-zA-Z0-9]+$/g,
+            minLength: 4,
+            maxLength: 12,
             validate: {
               inLowerCase: (v) => v.toLowerCase() === v,
-              withoutWhitespaces: (v) => !v.trim().includes(" "),
             },
           })}
           style={{
@@ -74,7 +77,15 @@ function UsernameInput({ watch, register, error }: UsernameInputProps) {
         <Form.Control.Feedback type="invalid" style={{ display: "block" }}>
           {error?.type === "required"
             ? "Required"
-            : "Username must be in lowercase, without whitespaces"}
+            : error.type === "pattern"
+            ? "Username must not contain special characters, including whitespaces"
+            : error.type === "minLength"
+            ? "Min 4 characters"
+            : error.type === "maxLength"
+            ? "Max 12 characters"
+            : error.type === "inLowerCase"
+            ? "Username must be in lower case"
+            : "Username must not include whitespaces"}
         </Form.Control.Feedback>
       ) : (
         !isUnique && <Styled.HelperError>Username taken</Styled.HelperError>
