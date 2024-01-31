@@ -10,6 +10,7 @@ import { useUser } from "../../stores/user";
 import Input from "components/Input";
 import { emailRegex, passwordRegex } from "const";
 import UsernameInput from "components/business/UsernameInput";
+import ImageInput from "components/UI/ImageInput";
 
 import * as Styled from "./Register.styled";
 
@@ -18,7 +19,7 @@ export type RegisterInputs = {
   username: string;
   password: string;
   repeatPassword: string;
-  images: any[];
+  images: { image: File | null }[];
   description: string;
 };
 
@@ -32,28 +33,32 @@ function RegisterPage() {
     watch,
     reset,
   } = useForm<RegisterInputs>();
-  const { fields, append, remove } = useFieldArray({
+  const {
+    fields: images,
+    append,
+    update,
+    remove,
+  } = useFieldArray({
     control,
     name: "images",
   });
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
+  const [addedImagesError, setAddedImagesError] = useState(false);
 
   const onSubmit: SubmitHandler<RegisterInputs> = async (data) => {
     const images = data.images.reduce((acc, image, index) => {
-      if (image.value[0]) {
+      if (image.image) {
         const key = `image${index + 1}`;
-        return { ...acc, [key]: image.value[0] };
+        return { ...acc, [key]: image.image };
       }
       return acc;
     }, {});
     // @ts-ignore
     delete data.images;
-
     try {
       setError("");
       setIsSending(true);
-
       const res = await authService.register({ ...data, ...images });
       setUser(res.user);
       reset();
@@ -66,114 +71,125 @@ function RegisterPage() {
   };
 
   useEffect(() => {
-    append("");
+    append({ image: null });
   }, []);
 
   return (
     <Layout>
       <Styled.Wrapper>
-        <div style={{ maxWidth: 370, width: "100%" }}>
+        <Styled.Form
+          onSubmit={handleSubmit(onSubmit)}
+          style={{ width: "100%" }}
+        >
           <Styled.Title>Registration</Styled.Title>
-          <Form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
-            <Form.Group className="mb-3" controlId="email">
-              <Form.Label>Email</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="johndoe@gmail.com"
-                {...register("email", {
-                  required: true,
-                  pattern: emailRegex,
-                })}
-                isInvalid={!!errors.email}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.email?.type === "required"
-                  ? "Required"
-                  : "Invalid email"}
-              </Form.Control.Feedback>
-            </Form.Group>
-
-            <UsernameInput
-              watch={watch}
-              register={register}
-              error={errors.username}
-            />
-
-            <Form.Label htmlFor="password">Password</Form.Label>
-            <div className="mb-3">
-              <Input
-                type="password"
-                {...register("password", {
-                  required: true,
-                  pattern: passwordRegex,
-                })}
-                id="password"
-                error={
-                  errors.password?.type === "required"
+          <Styled.UserInfoSection>
+            <Styled.SectionTitle>Your info</Styled.SectionTitle>
+            <Styled.UserInfoSectionInner>
+              <Form.Group controlId="email">
+                <Form.Label>Email</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="johndoe@gmail.com"
+                  {...register("email", {
+                    required: true,
+                    pattern: emailRegex,
+                  })}
+                  isInvalid={!!errors.email}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.email?.type === "required"
                     ? "Required"
-                    : errors.password?.type === "pattern"
-                    ? "8 characters, 1 uppercase letter, 1 lowercase letter and 1 number"
-                    : undefined
-                }
-              />
-            </div>
+                    : "Invalid email"}
+                </Form.Control.Feedback>
+              </Form.Group>
 
-            <Form.Group className="mb-4" controlId="repeat-password">
-              <Form.Label>Repeat password</Form.Label>
-              <Form.Control
-                type="password"
-                {...register("repeatPassword", {
-                  required: true,
-                  validate: {
-                    match: (v) => v === watch("password"),
-                  },
-                })}
-                isInvalid={!!errors.repeatPassword}
+              <UsernameInput
+                watch={watch}
+                register={register}
+                error={errors.username}
               />
-              <Form.Control.Feedback type="invalid">
-                {errors.repeatPassword?.type === "required"
-                  ? "Required"
-                  : "Password doesn't match"}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <p>Duck images</p>
-            <Styled.ImagesList>
-              {fields.map((field, index) => (
-                <Styled.ImagesListItem key={field.id}>
-                  {index !== 0 && (
+
+              <div>
+                <Form.Label htmlFor="password">Password</Form.Label>
+                <div className="mb-3">
+                  <Input
+                    type="password"
+                    {...register("password", {
+                      required: true,
+                      pattern: passwordRegex,
+                    })}
+                    id="password"
+                    error={
+                      errors.password?.type === "required"
+                        ? "Required"
+                        : errors.password?.type === "pattern"
+                        ? "8 characters, 1 uppercase letter, 1 lowercase letter and 1 number"
+                        : undefined
+                    }
+                  />
+                </div>
+              </div>
+
+              <Form.Group className="mb-4" controlId="repeat-password">
+                <Form.Label>Repeat password</Form.Label>
+                <Form.Control
+                  type="password"
+                  {...register("repeatPassword", {
+                    required: true,
+                    validate: {
+                      match: (v) => v === watch("password"),
+                    },
+                  })}
+                  isInvalid={!!errors.repeatPassword}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.repeatPassword?.type === "required"
+                    ? "Required"
+                    : "Password doesn't match"}
+                </Form.Control.Feedback>
+              </Form.Group>
+            </Styled.UserInfoSectionInner>
+          </Styled.UserInfoSection>
+          <section>
+            <Styled.SectionTitle>Duck</Styled.SectionTitle>
+            <Styled.UploadImagesWrapper>
+              {images.map(({ image, id }, index) => (
+                <Styled.ImageInputWrapper key={id}>
+                  {!image && index !== 0 && (
                     <Styled.RemoveButton
+                      variant="danger"
                       type="button"
                       onClick={() => remove(index)}
                     >
-                      -
+                      <Styled.RemoveIcon />
                     </Styled.RemoveButton>
                   )}
-                  <Form.Control
-                    type="file"
-                    accept="image/*"
-                    {...register(`images.${index}.value` as const, {
-                      required: true,
-                    })}
+                  <ImageInput
+                    image={image}
+                    register={register}
+                    registerName={`images.${index}.image`}
+                    onChange={(image) => update(index, { image })}
+                    onRemove={() => update(index, { image: null })}
+                    error={!!errors?.images?.[index]}
                   />
-                </Styled.ImagesListItem>
+                </Styled.ImageInputWrapper>
               ))}
-            </Styled.ImagesList>
-            {fields.length < 5 && (
-              <Styled.AddButtonWrapper>
-                <Button
-                  variant="primary"
-                  type="button"
-                  // @ts-ignore
-                  onClick={() => append({})}
-                >
-                  +
-                </Button>
-              </Styled.AddButtonWrapper>
-            )}
+              {images.length < 5 && (
+                <Styled.AddImageInput>
+                  <Styled.AddCircle
+                    variant="warning"
+                    type="button"
+                    onClick={() => append({ image: null })}
+                  >
+                    <Styled.AddIcon />
+                  </Styled.AddCircle>
+                </Styled.AddImageInput>
+              )}
+            </Styled.UploadImagesWrapper>
 
             <Form.Group
-              className="mb-4"
               controlId="exampleForm.ControlTextarea1"
+              style={{ gridColumn: "1 / 3" }}
             >
               <Form.Label>Duck Description</Form.Label>
               <Form.Control
@@ -189,7 +205,7 @@ function RegisterPage() {
               </Form.Control.Feedback>
             </Form.Group>
 
-            <Styled.BottomButtons>
+            <Styled.BottomButtons style={{ gridColumn: "1 / 3" }}>
               <Button variant="secondary" type="reset">
                 Reset
               </Button>
@@ -202,11 +218,9 @@ function RegisterPage() {
                 Submit
               </Button>
             </Styled.BottomButtons>
-          </Form>
-          {error && (
-            <Styled.Error className="text-danger">{error}</Styled.Error>
-          )}
-        </div>
+          </section>
+        </Styled.Form>
+        {error && <Styled.Error className="text-danger">{error}</Styled.Error>}
       </Styled.Wrapper>
     </Layout>
   );

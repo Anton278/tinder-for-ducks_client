@@ -46,7 +46,7 @@ function UsernameInput({ watch, register, error }: UsernameInputProps) {
   }, [username]);
 
   return (
-    <Form.Group className="mb-3" controlId="username">
+    <Form.Group controlId="username">
       <Form.Label>Username</Form.Label>
       <Styled.UsernameInpWrapper>
         <Form.Control
