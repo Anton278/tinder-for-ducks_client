@@ -216,8 +216,10 @@ function RegisterPage() {
               </Button>
             </Styled.BottomButtons>
           </section>
+          {error && (
+            <Styled.Error className="text-danger">{error}</Styled.Error>
+          )}
         </Styled.Form>
-        {error && <Styled.Error className="text-danger">{error}</Styled.Error>}
       </Styled.Wrapper>
     </Layout>
   );
