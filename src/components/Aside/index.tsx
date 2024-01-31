@@ -48,7 +48,7 @@ function Aside() {
           </div>
           <Badge bg="primary">2</Badge>
         </Styled.ListGroupItem>
-        <Styled.ListGroupItem action as={NavLink} to="/liked">
+        <Styled.ListGroupItem action as={"button"} to="/liked" disabled>
           <div>
             <Heart />
             Liked
