@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Button } from "react-bootstrap";
 
 export const Images = styled.div`
   display: flex;
@@ -7,53 +8,27 @@ export const Images = styled.div`
   margin-bottom: 20px;
 `;
 
-export const ImageWrapper = styled.div`
-  position: relative;
-  width: 200px;
-  height: 150px;
-
-  img {
-    border-radius: 10px;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-`;
-
-export const ImageDeleteButton = styled.button`
-  position: absolute;
-  top: -15px;
-  right: -15px;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  text-align: center;
-  padding: 0;
-  border: none;
-  cursor: pointer;
-  color: #fff;
-  background: var(--bs-danger);
-
-  &:hover {
-    background: #df4958;
-  }
-`;
-
-export const ImgInpWrapper = styled.div`
-  width: 200px;
-  height: 150px;
-  border: 1px dashed #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-
-  input {
-    width: 100%;
-  }
-`;
-
 export const SubmitBtnWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
 `;
+
+export const RemoveButton = styled(Button)({
+  position: "absolute",
+  top: -12,
+  right: -12,
+  width: 36,
+  height: 36,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  border: "none",
+  borderRadius: "50%",
+}) as typeof Button;
+
+export const RemoveIcon = styled.div({
+  width: 20,
+  height: 5,
+  background: "#fff",
+  borderRadius: 4,
+});

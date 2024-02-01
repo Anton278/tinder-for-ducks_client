@@ -6,11 +6,13 @@ import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 import SectionTitle from "../SectionTitle";
 import { useUser } from "stores/user";
 import fileService from "services/file";
+import ImageInput from "components/UI/ImageInput";
+import AddImageInput from "components/business/AddImageInput";
 
 import * as Styled from "./ProfileInfoSettings.styled";
 
 type Inputs = {
-  images: { value: string | FileList }[];
+  images: { image: string | File | null }[];
   description: string;
 };
 
@@ -21,41 +23,34 @@ function ProfileInfoSettings() {
     formState: { errors },
     control,
   } = useForm<Inputs>();
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, update } = useFieldArray({
     control,
     name: "images",
   });
-  const [imagesCopy, setImagesCopy] = useState<string[]>([]);
   const user = useUser((state) => state.user);
   const isLoadingUser = useUser((state) => state.isLoading);
   const updateUser = useUser((state) => state.updateUser);
 
   const onSubmit: SubmitHandler<Inputs> = async ({ description, images }) => {
     try {
-      // @ts-ignore
-      const notEmptyImages: { value: FileList }[] = images.filter(
-        ({ value }) => value.length
-      );
+      const oldImages = images.filter(({ image }) => typeof image == "string");
+      const newImages = images.filter(({ image }) => typeof image !== "string");
       const savedImages = await Promise.all(
-        notEmptyImages.map(({ value }) => fileService.save(value[0]))
+        // @ts-ignore
+        newImages.map((newImage) => fileService.save(newImage.image))
       );
       await updateUser({
         ...user,
         duck: {
           description,
+          // @ts-ignore
           images: [
-            ...imagesCopy,
+            ...oldImages.map((oldImage) => oldImage.image),
             ...savedImages.map((savedImage) => savedImage.name),
           ],
         },
       });
-    } catch (err) {
-    } finally {
-    }
-  };
-
-  const removeImage = (index: number) => {
-    setImagesCopy(imagesCopy.filter((_, imgIndex) => imgIndex !== index));
+    } catch (err) {}
   };
 
   useEffect(() => {
@@ -63,45 +58,43 @@ function ProfileInfoSettings() {
       return;
     }
 
-    setImagesCopy(user.duck.images);
+    user.duck.images.forEach((image, index) => {
+      update(index, { image });
+    });
   }, [isLoadingUser]);
-
-  useEffect(() => {
-    remove();
-    Array.from(Array(5 - imagesCopy.length)).forEach(() =>
-      append({ value: "" })
-    );
-  }, [imagesCopy.length]);
-
-  console.log("errors ", errors);
 
   return (
     <section>
       <Form onSubmit={handleSubmit(onSubmit)}>
         <SectionTitle>Profile Info</SectionTitle>
         <Styled.Images>
-          {imagesCopy.map((image, index) => (
-            <Styled.ImageWrapper key={image}>
-              <Styled.ImageDeleteButton
-                type="button"
-                onClick={() => removeImage(index)}
-              >
-                X
-              </Styled.ImageDeleteButton>
-              <img src={image} alt={"Profile"} />
-            </Styled.ImageWrapper>
-          ))}
-          {fields.map(({ id }, index) => (
-            <Styled.ImgInpWrapper key={id}>
-              <input
-                type="file"
-                accept="image/*"
-                {...register(`images.${index}.value` as const, {
-                  required: index === 0 && !imagesCopy.length,
-                })}
+          {fields.map(({ image, id }, index) => (
+            <div
+              key={id}
+              style={{ position: "relative", width: "fit-content" }}
+            >
+              {!image && index !== 0 && (
+                <Styled.RemoveButton
+                  variant="danger"
+                  type="button"
+                  onClick={() => remove(index)}
+                >
+                  <Styled.RemoveIcon />
+                </Styled.RemoveButton>
+              )}
+              <ImageInput
+                image={image}
+                register={register}
+                registerName={`images.${index}.image`}
+                onRemove={() => update(index, { image: null })}
+                onChange={(image) => update(index, { image })}
+                error={!!errors?.images?.[index]}
               />
-            </Styled.ImgInpWrapper>
+            </div>
           ))}
+          {fields.length < 5 && (
+            <AddImageInput onClick={() => append({ image: null })} />
+          )}
         </Styled.Images>
         <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
           <Form.Label>Duck description</Form.Label>

@@ -9,7 +9,7 @@ import {
 } from "./ImageInput.styled";
 
 type ImageInputProps = {
-  image: File | null;
+  image: File | null | string;
   register?: UseFormRegister<any>;
   registerName?: string;
   onRemove?: () => void;
@@ -40,7 +40,7 @@ function ImageInput(props: ImageInputProps) {
   };
 
   useEffect(() => {
-    if (image) {
+    if (image && typeof image !== "string") {
       setObjectURL(URL.createObjectURL(image));
     }
 
@@ -49,9 +49,10 @@ function ImageInput(props: ImageInputProps) {
     };
   }, [image]);
 
-  return !!objectURL ? (
+  return !!objectURL || typeof image === "string" ? (
     <ImageWrapper>
-      <img src={objectURL} />
+      {/* @ts-ignore */}
+      <img src={objectURL || image} />
       <RemoveButton variant="danger" type="button" onClick={onRemove}>
         <RemoveIcon />
       </RemoveButton>
