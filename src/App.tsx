@@ -6,6 +6,9 @@ import authService from "./services/auth";
 import { useUser } from "./stores/user";
 import useWsConfig from "hooks/useWebsocket";
 import useRouter from "hooks/useRouter";
+import { JwtTokenPayload } from "models/JwtTokenPayload";
+import usersService from "services/users";
+import { User } from "models/User";
 
 export const ws = new WebSocket(
   "ws://localhost:5000",
@@ -22,17 +25,21 @@ function App() {
       return;
     }
 
-    async function init() {
+    async function getUser() {
       try {
         const accessToken = await authService.refreshAccessToken();
-        const accessTokenPayload = jwtDecode<any>(accessToken);
-        setUser(accessTokenPayload.user);
+        const accessTokenPayload = jwtDecode<JwtTokenPayload>(accessToken);
+
+        const user = (await usersService.getOne(
+          accessTokenPayload.sub
+        )) as User;
+        setUser(user);
       } catch (err) {
         console.log(err);
       }
     }
 
-    init();
+    getUser();
   }, []);
 
   useWsConfig();
