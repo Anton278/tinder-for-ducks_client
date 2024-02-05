@@ -3,8 +3,8 @@ import ReactDOM from "react-dom/client";
 import { ToastContainer } from "react-toastify";
 
 import App from "./App";
-import { GlobalStyle } from "./globalStyle";
 
+import { GlobalStyle } from "./globalStyle";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-toastify/dist/ReactToastify.min.css";
 
